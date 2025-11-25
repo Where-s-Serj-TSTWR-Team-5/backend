@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import * as Dotenv from 'dotenv';
 Dotenv.config({ path: '.env' });
 
@@ -7,7 +7,6 @@ Dotenv.config({ path: '.env' });
  * @param err - ErrorResponse object
  * @param req - Request object
  * @param res - Response object
- * @param next - Next function for middleware chaining
  */
 export function errorHandler(err: Error, req: Request, res: Response, next: Function): void {
   const errStatus: number = typeof err.cause === 'number' ? err.cause : 500;

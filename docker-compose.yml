@@ -1,38 +1,41 @@
 services:
-  appointments:
-    container_name: appointments
-    build: ./appointments
+  plants:
+    container_name: plants
+    build: ./plants
     volumes:
-      - ./appointments/code:/usr/src/app
+      - ./plants/code:/usr/src/app
     networks:
-      - veterinarian
+      - foodforest
     ports:
-      - "3010:3010"
-    working_dir: /usr/src/app
-    command: bash -c "npm install && npm run dev"
-  clients:
-    container_name: clients
-    build: ./clients
-    volumes:
-      - ./clients/code:/usr/src/app
-    networks:
-      - veterinarian
-    ports:
-      - "3012:3012"
-    working_dir: /usr/src/app
-    command: bash -c "npm install && npm run dev"
-  gateway:
-    container_name: apigateway
-    build: ./apigateway
-    volumes:
-      - ./apigateway/code:/usr/src/app
-    networks:
-      - veterinarian
-    ports:
-      - "3011:3011"
+      - "3020:3020"
     working_dir: /usr/src/app
     command: bash -c "npm install && npm run dev"
 
+#  events:
+#    container_name: events
+#    build: ./events
+#    volumes:
+#      - ./events/code:/usr/src/app
+#    networks:
+#      - foodforest
+#    ports:
+#      - "3021:3021"
+#    working_dir: /usr/src/app
+#    command: bash -c "npm install && npm run dev"
+
+# rewards:
+#   container_name: rewards
+#   build: ./rewards
+#   volumes:
+#     - ./rewards/code:/usr/src/app
+#   networks:
+#     - veterinarian
+#   ports:
+#     - "3022:3022"
+#   working_dir: /usr/src/app
+#   command: bash -c "npm install && npm run dev"
+
+
 networks:
-  veterinarian:
+  foodforest:
     driver: bridge
