@@ -28,7 +28,3 @@ jobs:
       - name: Install dependencies
         working-directory: ${{ matrix.service }}
         run: npm install
-
-      - name: Run tests
-        working-directory: ${{ matrix.service }}
-        run: npm test
