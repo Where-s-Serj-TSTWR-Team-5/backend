@@ -9,14 +9,26 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        service:
+          - apigateway/code
+          - clients/code
+          - plants/code
+
     steps:
-      - name: Checkout repo
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
-          node-version: "25"
+          node-version: "20"
 
       - name: Install dependencies
+        working-directory: ${{ matrix.service }}
         run: npm install
+
+      - name: Run tests
+        working-directory: ${{ matrix.service }}
+        run: npm test
