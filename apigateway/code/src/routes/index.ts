@@ -11,7 +11,7 @@ const router: Router = Express.Router();
 
 // Plants microservice proxy
 const plantsProxyMiddleware = createProxyMiddleware<Request, Response>({
-  target: 'http://clients:3020/plants',
+  target: 'http://plants:3020/plants',
   on: {
     proxyReq: fixRequestBody,
   },
@@ -20,7 +20,7 @@ const plantsProxyMiddleware = createProxyMiddleware<Request, Response>({
 
 // Events microservice proxy
 const eventsProxyMiddleware = createProxyMiddleware<Request, Response>({
-  target: 'http://clients:3021/events',
+  target: 'http://events:3021/events',
   on: {
     proxyReq: fixRequestBody,
   },
@@ -29,7 +29,7 @@ const eventsProxyMiddleware = createProxyMiddleware<Request, Response>({
 
 // Rewards microservice proxy
 const rewardsProxyMiddleware = createProxyMiddleware<Request, Response>({
-  target: 'http://clients:3022/rewards',
+  target: 'http://rewards:3022/rewards',
   on: {
     proxyReq: fixRequestBody,
   },
@@ -38,7 +38,7 @@ const rewardsProxyMiddleware = createProxyMiddleware<Request, Response>({
 
 // test route
 router.get('/', (req: Request, res: Response, next: NextFunction) => {
-  res.json('hi');
+  res.json({ message: 'gateway alive' });
   next();
 });
 
