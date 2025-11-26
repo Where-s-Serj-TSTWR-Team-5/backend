@@ -10,7 +10,6 @@
 interface Plant {
   id?: number;
   createdAt?: Date;
-
   plantTypeID?: number;
   name: string;
   scientificName?: string;
