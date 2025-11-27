@@ -1,0 +1,46 @@
+name: CI Build
+
+on:
+  push:
+    branches:
+      - "**"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        service:
+          - apigateway/code
+          - clients/code
+          - plants/code
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        working-directory: ${{ matrix.service }}
+        run: npm install
+        
+      - name: Notify Teams
+        if: always()
+        env:
+          STATUS: ${{ job.status }}
+        run: |
+          curl -H "Content-Type: application/json" \
+               -d "{
+                    \"@type\": \"MessageCard\",
+                    \"@context\": \"http://schema.org/extensions\",
+                    \"summary\": \"Build Notification\",
+                    \"themeColor\": \"0076D7\",
+                    \"title\": \"CI Build Result\",
+                    \"text\": \"Service: **${{ matrix.service }}**<br>Status: **${STATUS}**\"
+                  }" \
+               ${{ secrets.TEAMS_WEBHOOK_URL }}
