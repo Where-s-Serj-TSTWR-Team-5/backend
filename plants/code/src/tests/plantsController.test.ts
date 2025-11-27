@@ -1,5 +1,5 @@
 import type { Request, Response } from 'express';
-import { getPlants, prisma } from './plantsController';
+import { getPlants, prisma } from '../controllers/plantsController';
 import type { Plant } from '../../prisma/types';
 
 // --- Fake req/res helpers ---
@@ -33,6 +33,8 @@ function createMockRequest(url: string = '/plants'): Request {
 }
 
 // --- Tests ---
+
+// --- Successful fetch ---
 
 async function test_getPlants_success() {
   console.log('Running: test_getPlants_success');
@@ -75,6 +77,8 @@ async function test_getPlants_success() {
   prisma.plant.findMany = originalFindMany;
 }
 
+// --- Error handling ---
+
 async function test_getPlants_error() {
   console.log('Running: test_getPlants_error');
 
@@ -105,6 +109,41 @@ async function test_getPlants_error() {
   console.log('✅ PASS: test_getPlants_error');
 
   // Restore
+  // @ts-ignore
+  prisma.plant.findMany = originalFindMany;
+}
+
+// --- Empty result ---
+
+async function test_getPlants_empty() {
+  console.log('Running: test_getPlants_empty');
+
+  // @ts-ignore
+  const originalFindMany = prisma.plant.findMany;
+  // @ts-ignore
+  prisma.plant.findMany = async () => [];
+
+  const req = createMockRequest('/plants');
+  const { res, getStatus, getBody } = createMockResponse();
+
+  await getPlants(req, res);
+
+  if (getStatus() !== 200) {
+    throw new Error(`Expected status 200, got ${getStatus()}`);
+  }
+
+  const body = getBody();
+
+  if (!body || body.meta?.count !== 0) {
+    throw new Error(`Expected meta.count 0, got ${JSON.stringify(body)}`);
+  }
+
+  if (!Array.isArray(body.data) || body.data.length !== 0) {
+    throw new Error(`Expected empty data array, got ${JSON.stringify(body.data)}`);
+  }
+
+  console.log('✅ PASS: test_getPlants_empty');
+
   // @ts-ignore
   prisma.plant.findMany = originalFindMany;
 }
