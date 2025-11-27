@@ -1,12 +1,13 @@
 import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 import { Plant } from '../../prisma/types.ts';
-const prisma: PrismaClient = new PrismaClient();
+
+export const prisma: PrismaClient = new PrismaClient();
 
 /**
- * Interface for the response object
+ * Response shape for a list of plants
  */
-interface PlantResponse {
+interface PlantListResponse {
   meta: {
     count: number;
     title: string;
@@ -15,80 +16,133 @@ interface PlantResponse {
   data: Plant[];
 }
 
+/**
+ * Response shape for a single plant
+ */
+interface PlantSingleResponse {
+  meta: {
+    title: string;
+    url: string;
+  };
+  data: Plant;
+}
 
 /**
- * Function to get all people
+ * Error response shape
+ */
+interface ErrorResponse {
+  error: {
+    message: string;
+    code: string;
+    url: string;
+  };
+}
+
+/**
+ * Get all plants
  * @param req {Request} - The Request object
  * @param res {Response} - The Response object
  * @returns {Promise<void>}
  */
 export async function getPlants(req: Request, res: Response): Promise<void> {
   try {
-    const plants: Plant[] = await prisma.plant.findMany() as Plant[];
-    const plantResponse: PlantResponse = {
+    const plants = await prisma.plant.findMany();
+
+    const plantResponse: PlantListResponse = {
       meta: {
         count: plants.length,
         title: 'All plants',
-        url: req.url
+        url: req.url,
       },
-      data: plants
+      data: plants as Plant[],
     };
-    res.status(200).send(plantResponse);
+
+    res.status(200).json(plantResponse);
   } catch (error) {
-    res.status(500).send({
+    console.error('Failed to retrieve plants:', error);
+
+    const errorResponse: ErrorResponse = {
       error: {
         message: 'Failed to retrieve plants',
         code: 'SERVER_ERROR',
-        url: req.url
-      }
-    });
+        url: req.url,
+      },
+    };
+
+    res.status(500).json(errorResponse);
   }
 }
 
 /**
- * Function to get a person by id
+ * Get a plant by id
  * @param req {Request} - The Request object
  * @param res {Response} - The Response object
  * @returns {Promise<void>}
  */
 export async function getPlant(req: Request, res: Response): Promise<void> {
   try {
-    const id: number = parseInt(req.params.id);
-    if (isNaN(id)) {
-      res.status(400).send({
+    const id: number = Number(req.params.id);
+
+    if (Number.isNaN(id)) {
+      const errorResponse: ErrorResponse = {
         error: {
           message: 'Invalid plant ID',
           code: 'INVALID_ID',
-          url: req.url
-        }
-      });
+          url: req.url,
+        },
+      };
+
+      res.status(400).json(errorResponse);
       return;
     }
-    const plant: Plant | null = await prisma.plant.findUnique({
-      where: { id }
-    }) as Plant | null;
+
+    const plant = await prisma.plant.findUnique({
+      where: { id },
+    });
+
     if (!plant) {
-      res.status(404).send({
+      const errorResponse: ErrorResponse = {
         error: {
           message: `Plant with ID ${id} not found`,
           code: 'NOT_FOUND',
-          url: req.url
-        }
-      });
+          url: req.url,
+        },
+      };
+
+      res.status(404).json(errorResponse);
       return;
     }
-    res.status(200).send(plant);
+
+    const response: PlantSingleResponse = {
+      meta: {
+        title: `Plant ${id}`,
+        url: req.url,
+      },
+      data: plant as Plant,
+    };
+
+    res.status(200).json(response);
   } catch (error) {
-    res.status(500).send({
+    console.error('Failed to retrieve plant:', error);
+
+    const errorResponse: ErrorResponse = {
       error: {
         message: 'Internal server error',
         code: 'SERVER_ERROR',
-        url: req.url
-      }
-    });
+        url: req.url,
+      },
+    };
+
+    res.status(500).json(errorResponse);
   }
 }
 
+/**
+ * Create a new plant
+ * @param req {Request} - The Request object
+ * @param res {Response} - The Response object
+ * @returns {Promise<void>}
+ */
 export async function setPlant(req: Request, res: Response): Promise<void> {
   try {
     const {
@@ -101,7 +155,21 @@ export async function setPlant(req: Request, res: Response): Promise<void> {
       plantTypeID,
     } = req.body;
 
-    const newPlant: Plant = await prisma.plant.create({
+    // Basic validation: name is required
+    if (!name || typeof name !== 'string') {
+      const errorResponse: ErrorResponse = {
+        error: {
+          message: 'Plant name is required',
+          code: 'VALIDATION_ERROR',
+          url: req.url,
+        },
+      };
+
+      res.status(400).json(errorResponse);
+      return;
+    }
+
+    const newPlant = await prisma.plant.create({
       data: {
         name,
         scientificName,
@@ -111,15 +179,28 @@ export async function setPlant(req: Request, res: Response): Promise<void> {
         image,
         plantTypeID,
       },
-    }) as Plant;
-    res.status(201).send(newPlant);
+    });
+
+    const response: PlantSingleResponse = {
+      meta: {
+        title: 'Plant created',
+        url: req.url,
+      },
+      data: newPlant as Plant,
+    };
+
+    res.status(201).json(response);
   } catch (error) {
-    res.status(500).send({
+    console.error('Failed to create plant:', error);
+
+    const errorResponse: ErrorResponse = {
       error: {
         message: 'Failed to create plant',
         code: 'SERVER_ERROR',
-        url: req.url
-      }
-    });
+        url: req.url,
+      },
+    };
+
+    res.status(500).json(errorResponse);
   }
 }
