@@ -28,3 +28,19 @@ jobs:
       - name: Install dependencies
         working-directory: ${{ matrix.service }}
         run: npm install
+        
+      - name: Notify Teams
+        if: always()
+        env:
+          STATUS: ${{ job.status }}
+        run: |
+          curl -H "Content-Type: application/json" \
+               -d "{
+                    \"@type\": \"MessageCard\",
+                    \"@context\": \"http://schema.org/extensions\",
+                    \"summary\": \"Build Notification\",
+                    \"themeColor\": \"0076D7\",
+                    \"title\": \"CI Build Result\",
+                    \"text\": \"Service: **${{ matrix.service }}**<br>Status: **${STATUS}**\"
+                  }" \
+               ${{ secrets.TEAMS_WEBHOOK_URL }}
