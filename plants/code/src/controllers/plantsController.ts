@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
-import { Plant } from '../../prisma/types.ts';
+import { Plant } from '../../prisma/types';
 
 export const prisma: PrismaClient = new PrismaClient();
 
