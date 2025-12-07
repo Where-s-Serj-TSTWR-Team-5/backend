@@ -41,7 +41,7 @@ services:
 #   volumes:
 #     - ./rewards/code:/usr/src/app
 #   networks:
-#     - veterinarian
+#     - foodforest
 #   ports:
 #     - "3022:3022"
 #   working_dir: /usr/src/app

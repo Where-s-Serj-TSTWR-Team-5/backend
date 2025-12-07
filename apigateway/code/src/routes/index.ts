@@ -1,19 +1,40 @@
 import Express, { NextFunction, Request, Response, Router } from 'express';
 import { createProxyMiddleware, fixRequestBody } from 'http-proxy-middleware';
 import type { Filter, Options, RequestHandler } from 'http-proxy-middleware';
+import { ApiError } from '../middleware/errors/apiError.ts';
 // import { authenticateToken } from '../middleware/authentication/authenticate.ts';
 const router: Router = Express.Router();
 
+// Helper to send consistent error when a microservice is unavailable
+function handleProxyError(serviceName: string, err: Error, req: Request, res: Response) {
+  const apiError = new ApiError(
+    502,
+    `${serviceName.toUpperCase()}_SERVICE_UNAVAILABLE`,
+    `${serviceName} service is unavailable`,
+    { originalError: err.message }
+  );
 
-// create a proxy for each microservice
-// add the on: { proxyReq: fixRequestBody } to fix the body issue with POST/PUT requests
-// see https://www.npmjs.com/package/http-proxy-middleware#intercept-and-manipulate-requests
+    // If you want to go through your global errorHandler, you’d call next(apiError),
+  // but we don't have `next` here, so we respond directly using the same shape:
+  res.status(apiError.status).json({
+    success: false,
+    status: apiError.status,
+    code: apiError.code,
+    message: apiError.message,
+    details: apiError.details,
+    timestamp: new Date().toISOString(),
+    path: req.originalUrl,
+  });
+}
 
 // Plants microservice proxy
 const plantsProxyMiddleware = createProxyMiddleware<Request, Response>({
   target: 'http://plants:3020/plants',
   on: {
     proxyReq: fixRequestBody,
+    error: (err, req, res) => {
+      handleProxyError('plants', err, req as Request, res as Response);
+    },
   },
   changeOrigin: true
 });
@@ -23,6 +44,9 @@ const eventsProxyMiddleware = createProxyMiddleware<Request, Response>({
   target: 'http://events:3021/events',
   on: {
     proxyReq: fixRequestBody,
+    error: (err, req, res) => {
+      handleProxyError('events', err, req as Request, res as Response);
+    },
   },
   changeOrigin: true
 });
@@ -32,6 +56,9 @@ const rewardsProxyMiddleware = createProxyMiddleware<Request, Response>({
   target: 'http://rewards:3022/rewards',
   on: {
     proxyReq: fixRequestBody,
+    error: (err, req, res) => {
+      handleProxyError('rewards', err, req as Request, res as Response);
+    },
   },
   changeOrigin: true
 });
@@ -39,7 +66,7 @@ const rewardsProxyMiddleware = createProxyMiddleware<Request, Response>({
 // test route
 router.get('/', (req: Request, res: Response, next: NextFunction) => {
   res.json({ message: 'gateway alive' });
-  next();
+  // next();
 });
 
 
