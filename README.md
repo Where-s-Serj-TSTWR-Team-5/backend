@@ -1,4 +1,4 @@
-# Veterinarian
+# Plants
 
 1. Install docker to your system
 2. Run `docker compose up` and you are good to go
@@ -13,12 +13,7 @@ We save credentials to other services in a `variables.env` file. This file is in
 
 ## Ports
 
-You can change the ports of your server via `variables.env`
-
-- Appoinments: microservice for the Appointments resource - running on port:3010
 - Apigateway: microservice for the API Gateway - running on port:3011
-- Clients: microservice for the Clients resource - running on port:3012
-
-## Containers
-
-Check the readme files of each container to understand the setup
+- Plants: microservice for the Plants resource - running on port:3020
+- Events: microservice for the Events resource - running on port:3021
+- Rewards: microservice for the Rewards resource - running on port:3022

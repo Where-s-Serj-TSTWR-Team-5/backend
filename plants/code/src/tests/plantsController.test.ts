@@ -14,6 +14,11 @@ function createMockResponse() {
     return res as Response;
   };
 
+  res.json = (data: any) => {
+    body = data;
+    return res as Response;
+  };
+
   res.send = (data: any) => {
     body = data;
     return res as Response;
