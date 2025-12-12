@@ -7,14 +7,21 @@
  * the createdAt field to be optional, it is genereated by Prisma.
  */
 
-interface Reward {
+interface Event {
   id?: number,
+  organizerId: number,
   title: string,
   description: string,
   thumbnail: string,
-  requiredPoints: number,
+  banner: string,
+  location: string,
+  startAt: Date,
+  endAt: Date,
+  date: Date,
+  studyPoints: number,
+  maxParticipants: number,
   createdAt?: Date,
   updatedAt?: Date
 }
 
-export { Reward };
+export { Event };

@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 // import { PrismaClient } from '../../node_modules/.prisma/client.ts';
 // import { PrismaClient } from '../../node_modules/.prisma/client/default.js';
 import { PrismaClient } from '@prisma/client';
-import { Reward } from '../../prisma/types.ts';
+import { Event } from '../../prisma/types.ts';
 const prisma: PrismaClient = new PrismaClient();
 
 /**
@@ -14,7 +14,7 @@ interface ClientResponse {
     title: string
     url: string
   },
-  data: Reward[]
+  data: Event[]
 }
 
 /**
@@ -23,15 +23,15 @@ interface ClientResponse {
  * @param res {Response} - The Response object
  * @returns {Promise<void>}
  */
-export async function getRewards(req: Request, res: Response): Promise<void> {
-  const rewards: Reward[] = await prisma.reward.findMany();
+export async function getEvents(req: Request, res: Response): Promise<void> {
+  const events: Event[] = await prisma.event.findMany();
   const clientReponse: ClientResponse = {
     meta: {
-      count: rewards.length,
-      title: 'All rewards',
+      count: events.length,
+      title: 'All events',
       url: req.url
     },
-    data: rewards
+    data: events
   };
   res.status(200).send(clientReponse);
 }
@@ -42,20 +42,20 @@ export async function getRewards(req: Request, res: Response): Promise<void> {
  * @param res {Response} - The Response object
  * @returns {Promise<void>}
  */
-export async function getReward(req: Request, res: Response, next: NextFunction): Promise<void> {
+export async function getEvent(req: Request, res: Response, next: NextFunction): Promise<void> {
   const id: number = parseInt(req.params.id);
 
   try {
-    const reward: Reward = await prisma.reward.findUnique({
+    const event: Event = await prisma.event.findUnique({
       where: {
         id: id
       }
     });
-    console.log('reward:', reward);
-    if (!reward) {
+    console.log('event:', event);
+    if (!event) {
       throw new Error('Event not found', { cause: 404 });
     }
-    res.json({ success: true, reward });
+    res.json({ success: true, event });
   } catch (err) {
     next(err); // forwards to error handler
   }
