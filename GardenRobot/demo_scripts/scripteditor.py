@@ -6,6 +6,8 @@ import threading
 import time
 from isaacsim.sensors.camera import Camera
 
+from projects.VolcanoFinder.models import MyFirstCNN
+
 CAMERA_PRIM_PATH = "/World/GardenRobot/Front_Sensor/Sensor_Mount/Camera"
 TCP_IP = "127.0.0.1"
 TCP_PORT = 5005

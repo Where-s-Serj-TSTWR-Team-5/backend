@@ -191,3 +191,10 @@ build/
 # drawio temp files
 *.drawio.bkp
 *.drawio.dtmp
+
+# Too big files
+GardenRobot/pipeline/cnns/
+GardenRobot/pipeline/notebooks/best_garden_cnn.pth
+GardenRobot/pipeline/data/
+GardenRobot/pipeline/__pycache__/
+.gitignore

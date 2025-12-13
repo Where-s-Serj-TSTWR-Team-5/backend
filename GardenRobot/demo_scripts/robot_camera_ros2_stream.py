@@ -9,9 +9,9 @@ from datetime import datetime
 TCP_IP = "127.0.0.1"
 TCP_PORT = 5005
 
-VIDEO_DIR = r"C:\Users\spec\Documents\programming\projects\GardenRobot\media\videos"
-IMAGE_DIR = r"C:\Users\spec\Documents\programming\projects\GardenRobot\media\images"
-SAVE_EVERY = 20
+VIDEO_DIR = r"C:\Users\spec\Documents\programming\projects\backend\GardenRobot\media\videos"
+IMAGE_DIR = r"C:\Users\spec\Documents\programming\projects\backend\GardenRobot\media\images"
+SAVE_EVERY = 60
 
 os.makedirs(VIDEO_DIR, exist_ok=True)
 os.makedirs(IMAGE_DIR, exist_ok=True)
