@@ -12,7 +12,8 @@ app.use(Express.json());
 app.use(Express.urlencoded({ extended: true }));
 
 // All routing handled by IndexRouter
-app.use('/', IndexRouter);
+// In frontedd, access via /api/plants
+app.use('/api', IndexRouter);
 
 app.use(errorHandler);
 

@@ -1,8 +1,6 @@
 import { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
-import { Plant } from '../../prisma/types';
-
-export const prisma: PrismaClient = new PrismaClient();
+import type { Plant } from '@prisma/client';
+import { prisma } from '../prisma';
 
 /**
  * Response shape for a list of plants
@@ -54,7 +52,7 @@ export async function getPlants(req: Request, res: Response): Promise<void> {
         title: 'All plants',
         url: req.url,
       },
-      data: plants as Plant[],
+      data: plants,
     };
 
     res.status(200).json(plantResponse);
@@ -81,7 +79,7 @@ export async function getPlants(req: Request, res: Response): Promise<void> {
  */
 export async function getPlant(req: Request, res: Response): Promise<void> {
   try {
-    const id: number = Number(req.params.id);
+    const id = Number(req.params.id);
 
     if (Number.isNaN(id)) {
       const errorResponse: ErrorResponse = {
@@ -118,7 +116,7 @@ export async function getPlant(req: Request, res: Response): Promise<void> {
         title: `Plant ${id}`,
         url: req.url,
       },
-      data: plant as Plant,
+      data: plant,
     };
 
     res.status(200).json(response);
@@ -186,7 +184,7 @@ export async function setPlant(req: Request, res: Response): Promise<void> {
         title: 'Plant created',
         url: req.url,
       },
-      data: newPlant as Plant,
+      data: newPlant,
     };
 
     res.status(201).json(response);
@@ -196,6 +194,155 @@ export async function setPlant(req: Request, res: Response): Promise<void> {
     const errorResponse: ErrorResponse = {
       error: {
         message: 'Failed to create plant',
+        code: 'SERVER_ERROR',
+        url: req.url,
+      },
+    };
+
+    res.status(500).json(errorResponse);
+  }
+}
+
+/*
+  * Update an existing plant
+  * @param req {Request} - The Request object
+  * @param res {Response} - The Response object
+  * @returns {Promise<void>} 
+  */
+export async function updatePlant(req: Request, res: Response): Promise<void> {
+  try {
+    const id = Number(req.params.id);
+
+    if (Number.isNaN(id)) {
+      const errorResponse: ErrorResponse = {
+        error: {
+          message: 'Invalid plant ID',
+          code: 'INVALID_ID',
+          url: req.url,
+        },
+      };
+
+      res.status(400).json(errorResponse);
+      return;
+    }
+
+    const {
+      name,
+      scientificName,
+      description,
+      sunlightRequirement,
+      waterNeeds,
+      image,
+      plantTypeID,
+    } = req.body;
+
+    if (!name || typeof name !== 'string') {
+      const errorResponse: ErrorResponse = {
+        error: {
+          message: 'Plant name is required',
+          code: 'VALIDATION_ERROR',
+          url: req.url,
+        },
+      };
+
+      res.status(400).json(errorResponse);
+      return;
+    }
+
+    const existingPlant = await prisma.plant.findUnique({ where: { id } });
+
+    if (!existingPlant) {
+      const errorResponse: ErrorResponse = {
+        error: {
+          message: `Plant with ID ${id} not found`,
+          code: 'NOT_FOUND',
+          url: req.url,
+        },
+      };
+
+      res.status(404).json(errorResponse);
+      return;
+    }
+
+    const updatedPlant = await prisma.plant.update({
+      where: { id },
+      data: {
+        name,
+        scientificName,
+        description,
+        sunlightRequirement,
+        waterNeeds,
+        image,
+        plantTypeID,
+      },
+    }); 
+
+    const response: PlantSingleResponse = {
+      meta: {
+        title: `Plant ${updatedPlant.name} updated`,
+        url: req.url,
+      },
+      data: updatedPlant,
+    };
+
+    res.status(200).json(response);
+  } catch (error) {
+    console.error('Failed to update plant:', error);
+
+    const errorResponse: ErrorResponse = {
+      error: {
+        message: 'Failed to update plant',
+        code: 'SERVER_ERROR',
+        url: req.url,
+      },
+    };  
+
+    res.status(500).json(errorResponse);
+  }
+}
+
+export async function deletePlant(req: Request, res: Response): Promise<void> {
+  try {
+    const id: number = Number(req.params.id);
+
+    if (Number.isNaN(id)) {
+      const errorResponse: ErrorResponse = {
+        error: {
+          message: 'Invalid plant ID',
+          code: 'INVALID_ID',
+          url: req.url,
+        },
+      };
+
+      res.status(400).json(errorResponse);
+      return;
+    }
+
+    const existingPlant = await prisma.plant.findUnique({ where: { id } });
+
+    if (!existingPlant) {
+      const errorResponse: ErrorResponse = {
+        error: {
+          message: `Plant with ID ${id} not found`,
+          code: 'NOT_FOUND',
+          url: req.url,
+        },
+      };
+
+      res.status(404).json(errorResponse);
+      return;
+    }
+
+    await prisma.plant.delete({ where: { id } });
+
+    // standard REST delete: no content
+    res.status(204).send();
+  } catch (error) {
+    console.error('Failed to delete plant:', error);
+
+    const errorResponse: ErrorResponse = {
+      error: {
+        message: 'Failed to delete plant',
         code: 'SERVER_ERROR',
         url: req.url,
       },
