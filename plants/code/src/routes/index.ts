@@ -6,8 +6,8 @@ const router: Router = Express.Router();
 //   res.json('hi');
 //   next();
 // });
-router.get('/plants', getPlants);
-router.get('/plants/:id', getPlant);
-router.post('/plants', setPlant);
+router.get('/', getPlants);
+router.get('/:id', getPlant);
+router.post('/', setPlant);
 
 export default router;
