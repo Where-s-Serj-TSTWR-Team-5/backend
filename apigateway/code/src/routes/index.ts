@@ -29,7 +29,7 @@ function handleProxyError(serviceName: string, err: Error, req: Request, res: Re
 
 // Plants microservice proxy
 const plantsProxyMiddleware = createProxyMiddleware<Request, Response>({
-  target: 'http://plants:3020/plants',
+  target: 'http://plants:3020',
   on: {
     proxyReq: fixRequestBody,
     error: (err, req, res) => {
@@ -41,7 +41,7 @@ const plantsProxyMiddleware = createProxyMiddleware<Request, Response>({
 
 // Events microservice proxy
 const eventsProxyMiddleware = createProxyMiddleware<Request, Response>({
-  target: 'http://events:3021/events',
+  target: 'http://events:3021',
   on: {
     proxyReq: fixRequestBody,
     error: (err, req, res) => {
@@ -53,7 +53,7 @@ const eventsProxyMiddleware = createProxyMiddleware<Request, Response>({
 
 // Rewards microservice proxy
 const rewardsProxyMiddleware = createProxyMiddleware<Request, Response>({
-  target: 'http://rewards:3022/rewards',
+  target: 'http://rewards:3022',
   on: {
     proxyReq: fixRequestBody,
     error: (err, req, res) => {
