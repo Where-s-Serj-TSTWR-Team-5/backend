@@ -47,17 +47,17 @@ services:
     working_dir: /usr/src/app
     command: bash -c "npm install && npm run dev"
 
-    users:
-      container_name: users
-      build: ./users
-      volumes:
-        - ./users/code:/usr/src/app
-      networks:
-        - foodforest
-      ports:
-        - "3023:3023"
-      working_dir: /usr/src/app
-      command: bash -c "npm install && npm run dev"
+  users:
+    container_name: users
+    build: ./users
+    volumes:
+      - ./users/code:/usr/src/app
+    networks:
+      - foodforest
+    ports:
+      - "3023:3023"
+    working_dir: /usr/src/app
+    command: bash -c "npm install && npm run dev"
 
 networks:
   foodforest:
