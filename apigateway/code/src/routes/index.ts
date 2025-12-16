@@ -39,6 +39,18 @@ const plantsProxyMiddleware = createProxyMiddleware<Request, Response>({
   changeOrigin: true
 });
 
+// Users microservice proxy
+const usersProxyMiddleware = createProxyMiddleware<Request, Response>({
+  target: 'http://users:3023',
+  on: {
+    proxyReq: fixRequestBody,
+    error: (err, req, res) => {
+      handleProxyError('users', err, req as Request, res as Response);
+    },
+  },
+  changeOrigin: true
+});
+
 // Events microservice proxy
 const eventsProxyMiddleware = createProxyMiddleware<Request, Response>({
   target: 'http://events:3021',
@@ -76,5 +88,6 @@ router.get('/', (req: Request, res: Response, next: NextFunction) => {
 router.use('/plants', plantsProxyMiddleware);
 router.use('/events', eventsProxyMiddleware);
 router.use('/rewards', rewardsProxyMiddleware);
+router.use('/users', usersProxyMiddleware);
 
 export default router;
