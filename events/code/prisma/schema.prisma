@@ -24,8 +24,9 @@ model Event {
   startAt             DateTime
   endAt               DateTime
   date                DateTime
-  studyPoints         Int
-  maxParticipants     Int
+  studyPoints         Int?
+  points              Int?
+  maxParticipants     Int?
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
 }
