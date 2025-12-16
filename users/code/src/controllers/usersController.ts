@@ -1,4 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 // import { PrismaClient } from '../../node_modules/.prisma/client.ts';
 // import { PrismaClient } from '../../node_modules/.prisma/client/default.js';
 import { PrismaClient } from '@prisma/client';
@@ -59,4 +61,42 @@ export async function getUser(req: Request, res: Response, next: NextFunction): 
   } catch (err) {
     next(err); // forwards to the error handler
   }
+}
+
+export async function loginUser(req: Request, res: Response, next: NextFunction): Promise<Response> {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({ message: 'Missing credentials' });
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { email }
+  });
+
+  if (!user) {
+    return res.status(401).json({ message: 'Invalid credentials' });
+  }
+
+  const valid = await bcrypt.compare(password, user.password);
+  if (!valid) {
+    return res.status(401).json({ message: 'Invalid credentials' });
+  }
+
+  const token = jwt.sign(
+    { userId: user.id },
+    process.env.JWT_SECRET!,
+    { expiresIn: '1h' }
+  );
+
+  // ✅ FINAL return (this is usually what people forget)
+  return res.json({
+    token,
+    user: {
+      id: user.id,
+      userName: user.userName,
+      email: user.email,
+      points: user.points
+    }
+  });
 }

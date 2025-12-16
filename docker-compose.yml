@@ -52,6 +52,7 @@ services:
     build: ./users
     volumes:
       - ./users/code:/usr/src/app
+      - /usr/src/app/node_modules
     networks:
       - foodforest
     ports:
