@@ -1,7 +1,9 @@
 import Express, { Router } from 'express';
-import { getUsers, getUser } from '../controllers/usersController.ts';
+import { getUsers, getUser, loginUser } from '../controllers/usersController.ts';
 const router: Router = Express.Router();
 
-router.get('/users', getUsers);
-router.get('/users/:id', getUser);
+router.get('/', getUsers);
+router.get('/:id', getUser);
+router.post('/login', loginUser);
+
 export default router;
