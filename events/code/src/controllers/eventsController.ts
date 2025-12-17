@@ -132,3 +132,69 @@ export async function createEvent(req: Request<unknown, unknown, CreateEventRequ
     next(err);
   }
 }
+
+/**
+ * Function to update an existing event
+ * @param req {Request} - The Request object with event id in params
+ * @param res {Response} - The Response object
+ * @param next {NextFunction} - The Next function
+ */
+export async function updateEvent(
+  req: Request<{ id: string }, unknown, Partial<CreateEventRequestBody>>, 
+  res: Response, 
+  next: NextFunction
+): Promise<void> {
+  const id = parseInt(req.params.id);
+
+  if (isNaN(id)) {
+    res.status(400).json({ success: false, message: 'Invalid Event ID' });
+    return;
+  }
+
+  const {
+    title,
+    description,
+    thumbnail,
+    banner,
+    location,
+    startAt,
+    endAt,
+    studyPoints,
+    points,
+    maxParticipants,
+  } = req.body;
+
+  try {
+    const existingEvent = await prisma.event.findUnique({ where: { id } });
+    
+    if (!existingEvent) {
+      res.status(404).json({ success: false, message: 'Event not found' });
+      return;
+    }
+
+    const updatedEvent = await prisma.event.update({
+      where: { id },
+      data: {
+        title: title ?? undefined,
+        description: description ?? undefined,
+        thumbnail: thumbnail ?? undefined,
+        banner: banner ?? undefined,
+        location: location ?? undefined,
+        startAt: startAt ?? undefined,
+        endAt: endAt ?? undefined,
+        studyPoints: studyPoints !== undefined ? Number(studyPoints) : undefined,
+        points: points !== undefined ? Number(points) : undefined,
+        maxParticipants: maxParticipants !== undefined ? Number(maxParticipants) : undefined,
+        date: startAt ?? undefined,
+      },
+    });
+
+    res.status(200).json({
+      success: true,
+      event: updatedEvent
+    });
+
+  } catch (err) {
+    next(err);
+  }
+}
