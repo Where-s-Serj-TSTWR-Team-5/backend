@@ -13,20 +13,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Event {
-  id                   Int      @id @default(autoincrement())
-  organizerId          Int
-  title                String
-  description          String
-  thumbnail            String
-  banner               String
-  location             String
-  startAt             DateTime
-  endAt               DateTime
-  date                DateTime
-  studyPoints         Int?
-  points              Int?
-  maxParticipants     Int?
+model User {
+  id                  Int      @id @default(autoincrement())
+  userName            String   @unique
+  email               String   @unique
+  password            String
+  points              Int      @default(0)
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
 }

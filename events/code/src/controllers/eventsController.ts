@@ -18,6 +18,22 @@ interface ClientResponse {
 }
 
 /**
+ * Interface for the request body when creating an Event
+ */
+interface CreateEventRequestBody {
+  title: string;
+  description?: string;
+  thumbnail?: string;
+  banner?: string;
+  location: string;
+  startAt: string;
+  endAt?: string;
+  studyPoints?: number;
+  points?: number;
+  maxParticipants?: number;
+}
+
+/**
  * Function to get all people
  * @param req {Request} - The Request object
  * @param res {Response} - The Response object
@@ -51,12 +67,68 @@ export async function getEvent(req: Request, res: Response, next: NextFunction):
         id: id
       }
     });
-    console.log('event:', event);
     if (!event) {
       throw new Error('Event not found', { cause: 404 });
     }
     res.json({ success: true, event });
   } catch (err) {
     next(err); // forwards to error handler
+  }
+}
+
+/**
+ * Function to create a new event
+ * @param req {Request} - The Request object
+ * @param res {Response} - The Response object
+ * @param next {NextFunction} - The Next function
+ * @returns {Promise<void>}
+ */
+export async function createEvent(req: Request<unknown, unknown, CreateEventRequestBody>, res: Response, next: NextFunction): Promise<void> {
+  const {
+    title,
+    description,
+    thumbnail,
+    banner,
+    location,
+    startAt,
+    endAt,
+    studyPoints,
+    points,
+    maxParticipants,
+  } = req.body;
+
+  if (!startAt) {
+    res.status(400).json({ success: false, message: 'startAt time is required.' });
+    return;
+  }
+
+  try {
+    // Calculate 1 hour default if not provided
+    const defaultEndAt = new Date(new Date(startAt).getTime() + 60 * 60 * 1000);
+
+    const newEvent = await prisma.event.create({
+      data: {
+        title: title,
+        location: location,
+        description: description || 'No description provided.',
+        thumbnail: thumbnail || '',
+        banner: banner || '',
+        studyPoints: studyPoints || 0,
+        maxParticipants: maxParticipants || 100,
+        points: points,
+        startAt: startAt,
+        endAt: endAt || defaultEndAt,
+        date: startAt,
+        organizerId: 1,
+      }
+    });
+
+    res.status(201).json({
+      success: true,
+      event: newEvent
+    });
+
+  } catch (err) {
+    next(err);
   }
 }
