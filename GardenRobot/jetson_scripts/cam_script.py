@@ -18,7 +18,7 @@ while True:
     if not ret:
         break
 
-    if frame_count % 20 == 0:
+    if frame_count % 30 == 0:
         filename = os.path.join(save_dir, f"frame_{frame_count:04d}.jpg")
         cv2.imwrite(filename, frame)
 
