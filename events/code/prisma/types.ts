@@ -18,8 +18,9 @@ interface Event {
   startAt: Date,
   endAt: Date,
   date: Date,
-  studyPoints: number,
-  maxParticipants: number,
+  studyPoints: number | null,
+  points: number | null,
+  maxParticipants: number | null,
   createdAt?: Date,
   updatedAt?: Date
 }
