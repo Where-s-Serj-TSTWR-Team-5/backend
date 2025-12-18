@@ -2,10 +2,11 @@ import cv2
 import os
 
 save_dir = "cam_images"
+os.makedirs(save_dir, exist_ok=True)
 
 gst_str = (
     'nvarguscamerasrc ! '
-    'video/x-raw(memory:NVMM), width=1920, height=1080, format=NV12, framerate=30/1 ! '
+    'video/x-raw(memory:NVMM), width=256, height=256, format=NV12, framerate=60/2 ! '
     'nvvidconv ! videoconvert ! '
     'video/x-raw, format=BGR ! appsink'
 )
