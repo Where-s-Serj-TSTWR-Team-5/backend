@@ -3,11 +3,14 @@ import { getPlant, getPlants, setPlant, updatePlant, deletePlant } from '../cont
 
 const router: Router = Express.Router();
 
-router.get('/plants', getPlants);
-router.get('/plants/:id', getPlant);
-router.post('/plants', setPlant);
-router.put('/plants/:id', updatePlant);
-router.delete('/plants/:id', deletePlant);
-
+// router.get('/', (req: Request, res: Response, next: NextFunction) => {
+//   res.json('hi');
+//   next();
+// });
+router.get('/', getPlants);
+router.get('/:id', getPlant);
+router.post('/', setPlant);
+router.put('/:id', updatePlant);
+router.delete('/:id', deletePlant);
 
 export default router;

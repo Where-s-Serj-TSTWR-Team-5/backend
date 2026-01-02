@@ -7,22 +7,14 @@
  * the createdAt field to be optional, it is genereated by Prisma.
  */
 
-interface Event {
+interface User {
   id?: number,
-  organizerId: number,
-  title: string,
-  description: string,
-  thumbnail: string,
-  banner: string,
-  location: string,
-  startAt: Date,
-  endAt: Date,
-  date: Date,
-  studyPoints: number | null,
-  points: number | null,
-  maxParticipants: number | null,
+  userName: string,
+  email: string,
+  password: string,
+  points: number,
   createdAt?: Date,
   updatedAt?: Date
 }
 
-export { Event };
+export { User };
