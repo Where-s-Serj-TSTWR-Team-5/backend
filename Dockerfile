@@ -1,8 +1,0 @@
-FROM node:20
-
-WORKDIR /app
-
-# Only copy package files first (cache optimization)
-COPY package*.json ./
-
-RUN npm install
