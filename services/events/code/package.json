@@ -7,6 +7,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "build": "tsc",
     "postinstall": "",
     "dev": "nodemon --watch src --ext ts --exec tsx src/start.ts",
     "start": "tsx src/start.ts",
@@ -14,6 +15,7 @@
   },
   "dependencies": {
     "@prisma/client": "^6.19.1",
+    "@database/prisma": "*",
     "cors": "^2.8.5",
     "dotenv": "^17.2.1",
     "express": "^5.1.0",

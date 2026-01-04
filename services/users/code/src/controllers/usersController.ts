@@ -1,9 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { User } from '../../prisma/types.ts';
-import { PrismaClient } from '@prisma/client';
-const prisma = new PrismaClient();
+import { prisma, type User } from '@database/prisma';
 
 /**
  * Interface for the response object
@@ -46,7 +44,7 @@ export async function getUser(req: Request, res: Response, next: NextFunction): 
   const id: number = parseInt(req.params.id);
 
   try {
-    const user: User = await prisma.user.findUnique({
+    const user: User | null = await prisma.user.findUnique({
       where: {
         id: id
       }

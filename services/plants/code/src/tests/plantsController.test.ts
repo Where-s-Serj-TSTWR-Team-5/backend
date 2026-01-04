@@ -1,6 +1,6 @@
 import type { Request, Response } from 'express';
-import { getPlants, prisma } from '../controllers/plantsController';
-import type { Plant } from '../../prisma/types';
+import { getPlants } from '../controllers/plantsController.js';
+import { prisma , type Plant} from '@database/prisma';
 
 // --- Fake req/res helpers ---
 

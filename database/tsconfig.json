@@ -4,13 +4,9 @@
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "rootDir": "src",
-    "outDir": "build",
-    "strict": true,
-    "esModuleInterop": true,
+    "outDir": "dist",
     "declaration": true,
-    "sourceMap": true,
-    "allowImportingTsExtensions": true,
-    "emitDeclarationOnly": true
+    "strict": true
   },
   "include": ["src"]
 }

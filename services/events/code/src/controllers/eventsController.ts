@@ -1,7 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { Event } from '../../prisma/types.ts';
-import { PrismaClient } from '@prisma/client';
-const prisma = new PrismaClient();
+import { prisma, type Event } from '@database/prisma';
 
 /**
  * Interface for the response object
@@ -60,7 +58,7 @@ export async function getEvent(req: Request, res: Response, next: NextFunction):
   const id: number = parseInt(req.params.id);
 
   try {
-    const event: Event = await prisma.event.findUnique({
+    const event: Event | null = await prisma.event.findUnique({
       where: {
         id: id
       }

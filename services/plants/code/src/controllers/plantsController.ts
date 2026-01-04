@@ -1,7 +1,5 @@
 import { Request, Response } from 'express';
-import { Plant } from '../../prisma/types';
-import { PrismaClient } from '@prisma/client';
-const prisma = new PrismaClient();
+import { prisma, type Plant } from '@database/prisma';
 
 /**
  * Response shape for a list of plants

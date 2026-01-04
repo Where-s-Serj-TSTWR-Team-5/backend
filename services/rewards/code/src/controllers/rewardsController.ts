@@ -1,7 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { Reward } from '../../prisma/types.ts';
-import { PrismaClient } from '@prisma/client';
-const prisma = new PrismaClient();
+import { prisma, type Reward } from '@database/prisma';
 
 /**
  * Interface for the response object
@@ -44,7 +42,7 @@ export async function getReward(req: Request, res: Response, next: NextFunction)
   const id: number = parseInt(req.params.id);
 
   try {
-    const reward: Reward = await prisma.reward.findUnique({
+    const reward: Reward | null = await prisma.reward.findUnique({
       where: {
         id: id
       }
