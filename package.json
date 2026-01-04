@@ -1,12 +1,14 @@
 {
   "private": true,
   "workspaces": [
-    "services/*/*",
-    "apigateway/*",
+    "services/*",
+    "apigateway/",
     "database/"
   ],
   "devDependencies": {
-    "concurrently": "^8.2.0"
+    "concurrently": "^8.2.0",
+    "nodemon": "^3.1.11",
+    "tsx": "^4.21.0"
   },
   "scripts": {
     "dev": "npm run generate && concurrently \"npm run dev --workspace=@service/events\" \"npm run dev --workspace=@service/plants\" \"npm run dev --workspace=@service/rewards\" \"npm run dev --workspace=@service/users\" \"npm run dev --workspace=@gateway/apigateway\"",
