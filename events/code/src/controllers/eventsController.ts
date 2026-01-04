@@ -132,3 +132,30 @@ export async function createEvent(req: Request<unknown, unknown, CreateEventRequ
     next(err);
   }
 }
+
+/**
+ * Function to delete an event by ID
+ */
+export async function deleteEvent(  req: Request<{ id: string }>, res: Response, next: NextFunction): Promise<void> {
+  const id = parseInt(req.params.id);
+
+  if (isNaN(id)) {
+    res.status(400).json({ success: false, message: 'Invalid Event ID' });
+    return;
+  }
+
+  try {
+    const existingEvent = await prisma.event.findUnique({ where: { id } });
+    if (!existingEvent) {
+      res.status(404).json({ success: false, message: 'Event not found' });
+      return;
+    }
+
+    await prisma.event.delete({ where: { id } });
+
+    res.status(200).json({ success: true, message: 'Event deleted' });
+
+  } catch (err) {
+    next(err);
+  }
+}
