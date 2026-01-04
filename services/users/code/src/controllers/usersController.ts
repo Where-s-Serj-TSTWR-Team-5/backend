@@ -1,8 +1,8 @@
+import "dotenv/config";
 import { NextFunction, Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { prisma, type User } from '@database/prisma';
-
 /**
  * Interface for the response object
  */

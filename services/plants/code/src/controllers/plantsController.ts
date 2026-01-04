@@ -1,3 +1,4 @@
+import "dotenv/config";
 import { Request, Response } from 'express';
 import { prisma, type Plant } from '@database/prisma';
 
