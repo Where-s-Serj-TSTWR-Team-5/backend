@@ -1,20 +1,30 @@
-// start.js setup from learnnode.com by Wes Bos
 import Express, { Application, Request, Response, NextFunction } from 'express';
 import * as Dotenv from 'dotenv';
-Dotenv.config({ path: '.env', override: true });
+Dotenv.config({ path: './.env' , override: true});
 import IndexRouter from './routes/index.js';
 import { errorHandler } from './middleware/errors/errorHandler.js';
+import helmet from 'helmet';
+import cors from 'cors';
 
 const app: Application = Express();
-const port: number = process.env.PORT ? parseInt(process.env.PORT) : 3011;
+const port: number = process.env.PORT ? parseInt(process.env.PORT) : 3010;
 
-// support json encoded and url-encoded bodies, mainly used for post and update
+// security middleware
+app.use(helmet());
+
+// Cors
+app.use(cors({
+  origin: 'http://localhost:5173',
+  credentials: true
+}));
+
+// body parsing
 app.use(Express.json());
 app.use(Express.urlencoded({ extended: true }));
 
 app.use('/', IndexRouter);
 
-// 404 catch-all handler (middleware)
+// 404
 app.use((req: Request, res: Response, next: NextFunction) => {
   try {
     throw new Error('Resource not found', { cause: 404 });
@@ -23,9 +33,9 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   }
 });
 
-// Error handler (last) - implemented a custom error handler
+// error handler
 app.use(errorHandler);
 
 app.listen(port, () => {
-  console.log(`💻 Apigateway running → PORT ${port}`);
+  console.log(`🌱 Service/Plants running → PORT ${port}`);
 });

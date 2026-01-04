@@ -1,0 +1,15 @@
+{
+  "private": true,
+  "workspaces": [
+    "services/*/*",
+    "apigateway/*"
+  ],
+  "devDependencies": {
+    "concurrently": "^8.2.0"
+  },
+  "scripts": {
+    "dev": "npm run prisma:generate && concurrently \"npm run dev --workspace=@service/events\" \"npm run dev --workspace=@service/plants\" \"npm run dev --workspace=@service/rewards\" \"npm run dev --workspace=@service/users\" \"npm run dev --workspace=@gateway/apigateway\"",
+    "prisma:generate": "npm run prisma:generate --workspace=@service/events && npm run prisma:generate --workspace=@service/plants && npm run prisma:generate --workspace=@service/rewards && npm run prisma:generate --workspace=@service/users",
+    "install:all": "npm install && npm run prisma:generate"
+  }
+}

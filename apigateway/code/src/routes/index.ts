@@ -1,6 +1,5 @@
 import Express, { NextFunction, Request, Response, Router } from 'express';
 import { createProxyMiddleware, fixRequestBody } from 'http-proxy-middleware';
-import type { Filter, Options, RequestHandler } from 'http-proxy-middleware';
 import { ApiError } from '../middleware/errors/apiError.ts';
 // import { authenticateToken } from '../middleware/authentication/authenticate.ts';
 const router: Router = Express.Router();
@@ -29,7 +28,7 @@ function handleProxyError(serviceName: string, err: Error, req: Request, res: Re
 
 // Plants microservice proxy
 const plantsProxyMiddleware = createProxyMiddleware<Request, Response>({
-  target: 'http://plants:3020',
+  target: 'http://localhost:3020',
   on: {
     proxyReq: fixRequestBody,
     error: (err, req, res) => {
@@ -41,7 +40,7 @@ const plantsProxyMiddleware = createProxyMiddleware<Request, Response>({
 
 // Users microservice proxy
 const usersProxyMiddleware = createProxyMiddleware<Request, Response>({
-  target: 'http://users:3023',
+  target: 'http://localhost:3023',
   on: {
     proxyReq: fixRequestBody,
     error: (err, req, res) => {
@@ -53,7 +52,7 @@ const usersProxyMiddleware = createProxyMiddleware<Request, Response>({
 
 // Events microservice proxy
 const eventsProxyMiddleware = createProxyMiddleware<Request, Response>({
-  target: 'http://events:3021',
+  target: 'http://localhost:3021',
   on: {
     proxyReq: fixRequestBody,
     error: (err, req, res) => {
@@ -65,7 +64,7 @@ const eventsProxyMiddleware = createProxyMiddleware<Request, Response>({
 
 // Rewards microservice proxy
 const rewardsProxyMiddleware = createProxyMiddleware<Request, Response>({
-  target: 'http://rewards:3022',
+  target: 'http://localhost:3022',
   on: {
     proxyReq: fixRequestBody,
     error: (err, req, res) => {

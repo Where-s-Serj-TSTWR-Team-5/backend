@@ -1,65 +1,96 @@
 services:
-  plants:
-    container_name: plants
-    build: ./plants
-    volumes:
-      - ./plants/code:/usr/src/app
-    networks:
-      - foodforest
-    ports:
-      - "3020:3020"
-    working_dir: /usr/src/app
-    command: bash -c "npm install && npm run dev"
+  # gateway:
+  #   container_name: apigateway
+  #   build: ./apigateway
+  #   volumes:
+  #     - ./apigateway/code:/usr/src/app
+  #   networks:
+  #     - foodforest
+  #   ports:
+  #     - "3011:3011"
+  #   working_dir: /usr/src/app
+  #   command: bash -c "npm install && npm run dev"
 
-  gateway:
-    container_name: apigateway
-    build: ./apigateway
+  # plants:
+  #   container_name: plants
+  #   build: ./services/plants
+  #   volumes:
+  #     - ./services/plants/code:/usr/src/app
+  #     - ./database/prisma/app.db:/usr/src/app/app.db
+  #     - ./database/prismaClient.ts:/usr/src/app/src/controllers/prismaClient.ts
+  #   networks:
+  #     - foodforest
+  #   ports:
+  #     - "3020:3020"
+  #   working_dir: /usr/src/app
+  #   command: bash -c "npm install && npm run dev"
+
+  project:
+    container_name: project
+    build: ./
     volumes:
-      - ./apigateway/code:/usr/src/app
+      - node_modules_app:/app/node_modules
     networks:
       - foodforest
-    ports:
-      - "3011:3011"
-    working_dir: /usr/src/app
-    command: bash -c "npm install && npm run dev"
+    working_dir: /app
+    # command: bash -c "npm install"
+
+  database:
+    build: ./database
+    volumes:
+      - ./database:/app
+      - prisma:/app/database/prisma
+    working_dir: /app
+    environment:
+      DATABASE_URL: file:./database/prisma/app.db
+    # command: bash -c "npm install"
 
   events:
     container_name: events
-    build: ./events
+    build: ./services/events
     volumes:
-      - ./events/code:/usr/src/app
+      - ./services/events:/app
+      - prisma:/app/database/prisma
+      - node_modules_app:/app/node_modules
     networks:
       - foodforest
     ports:
       - "3021:3021"
-    working_dir: /usr/src/app
-    command: bash -c "npm install && npm run dev"
+    working_dir: /app/services/events
+    # command: bash -c "npm install && npm run dev"
 
-  rewards:
-    container_name: rewards
-    build: ./rewards
-    volumes:
-      - ./rewards/code:/usr/src/app
-    networks:
-      - foodforest
-    ports:
-      - "3022:3022"
-    working_dir: /usr/src/app
-    command: bash -c "npm install && npm run dev"
+  # rewards:
+  #   container_name: rewards
+  #   build: ./services/rewards
+  #   volumes:
+  #     - ./services/rewards/code:/usr/src/app
+  #     - ./database/prisma/app.db:/usr/src/app/app.db
+  #     - ./database/prismaClient.ts:/usr/src/app/src/controllers/prismaClient.ts
+  #   networks:
+  #     - foodforest
+  #   ports:
+  #     - "3022:3022"
+  #   working_dir: /usr/src/app
+  #   command: bash -c "npm install && npm run dev"
 
-  users:
-    container_name: users
-    build: ./users
-    volumes:
-      - ./users/code:/usr/src/app
-      - /usr/src/app/node_modules
-    networks:
-      - foodforest
-    ports:
-      - "3023:3023"
-    working_dir: /usr/src/app
-    command: bash -c "npm install && npm run dev"
+  # users:
+  #   container_name: users
+  #   build: ./services/users
+  #   volumes:
+  #     - ./services/users/code:/usr/src/app
+  #     - ./database/prisma/app.db:/usr/src/app/app.db
+  #     - ./database/prismaClient.ts:/usr/src/app/src/controllers/prismaClient.ts
+  #   networks:
+  #     - foodforest
+  #   ports:
+  #     - "3023:3023"
+  #   working_dir: /usr/src/app
+  #   command: bash -c "npm install && npm run dev"
 
 networks:
   foodforest:
     driver: bridge
+
+volumes:
+  node_modules_app:
+  prisma:

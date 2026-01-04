@@ -1,5 +1,5 @@
 {
-  "name": "express-ts-skeleton-app",
+  "name": "@service/events",
   "version": "2024.1",
   "repository": "git@github.com:HZ-HBO-ICT/ts-skeleton-app.git",
   "author": "HZ University of Applied Sciences",
@@ -9,10 +9,11 @@
   "scripts": {
     "postinstall": "",
     "dev": "nodemon --watch src --ext ts --exec tsx src/start.ts",
-    "start": "tsx src/start.ts"
+    "start": "tsx src/start.ts",
+    "prisma:generate": "npx prisma generate --schema ../../../database/prisma/schema.prisma"
   },
   "dependencies": {
-    "@prisma/client": "^6.14.0",
+    "@prisma/client": "^6.19.1",
     "cors": "^2.8.5",
     "dotenv": "^17.2.1",
     "express": "^5.1.0",
