@@ -11,7 +11,7 @@
   "scripts": {
     "dev": "npm run generate && concurrently \"npm run dev --workspace=@service/events\" \"npm run dev --workspace=@service/plants\" \"npm run dev --workspace=@service/rewards\" \"npm run dev --workspace=@service/users\" \"npm run dev --workspace=@gateway/apigateway\"",
     "generate": "npm run prisma:generate --workspace=@database/prisma",
-    "install:all": "npm install && npm run prisma:generate",
+    "install:all": "npm install && npm run generate",
     "build:database": "npm run build --workspace=@database/prisma",
     "build:services": "npm run build --workspace=@service/events && npm run build --workspace=@service/plants && npm run build --workspace=@service/rewards && npm run build --workspace=@service/users",
     "build:all": "npm run build:database && npm run build:services",
