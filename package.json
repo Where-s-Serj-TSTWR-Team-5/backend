@@ -14,6 +14,8 @@
     "install:all": "npm install && npm run prisma:generate",
     "build:database": "npm run build --workspace=@database/prisma",
     "build:services": "npm run build --workspace=@service/events && npm run build --workspace=@service/plants && npm run build --workspace=@service/rewards && npm run build --workspace=@service/users",
-    "build:all": "npm run build:database && npm run build:services"
+    "build:all": "npm run build:database && npm run build:services",
+    "migrate": "npm run prisma:migrate --workspace=@database/prisma",
+    "seed": "npm run prisma:seed --workspace=@database/prisma"
   }
 }

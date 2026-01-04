@@ -1,7 +1,8 @@
-import { seedEvents } from './events.ts';
-import { seedPlants } from './plants.ts';
-import { seedRewards } from './rewards.ts';
-import { seedUsers } from './users.ts';
+import "dotenv/config";
+import { seedEvents } from './events.js';
+import { seedPlants } from './plants.js';
+import { seedRewards } from './rewards.js';
+import { seedUsers } from './users.js';
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
