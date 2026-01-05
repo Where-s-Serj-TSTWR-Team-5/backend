@@ -7,8 +7,6 @@
     "outDir": "dist",
     "declaration": true,
     "strict": true,
-    // "allowImportingTsExtensions": true,
-    // "emitDeclarationOnly": true
   },
   "include": ["src"]
 }
