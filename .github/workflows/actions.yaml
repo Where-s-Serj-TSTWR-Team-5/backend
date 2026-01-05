@@ -14,7 +14,6 @@ jobs:
         service:
           - apigateway
           - database
-          - services/clients
           - services/plants
           - services/rewards
           - services/users
