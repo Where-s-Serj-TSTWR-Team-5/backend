@@ -12,9 +12,12 @@ jobs:
     strategy:
       matrix:
         service:
-          - apigateway/code
-          - clients/code
-          - plants/code
+          - apigateway
+          - database
+          - services/clients
+          - services/plants
+          - services/rewards
+          - services/users
 
     steps:
       - name: Checkout repository
