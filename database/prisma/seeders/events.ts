@@ -1,6 +1,4 @@
-import { PrismaClient } from '@prisma/client';
-const prisma = new PrismaClient();
-import type { Event } from '@prisma/client';
+import { prisma, Event } from '@database/prisma';
 
 const events: Omit<Event, 'id'>[] = [
   {

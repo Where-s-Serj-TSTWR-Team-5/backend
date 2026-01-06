@@ -1,6 +1,4 @@
-import { PrismaClient, User } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma, User } from '@database/prisma';
 
 const users: Omit<User, 'id'>[] = [
   {
