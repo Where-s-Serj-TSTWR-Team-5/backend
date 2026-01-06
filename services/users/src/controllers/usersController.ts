@@ -134,3 +134,41 @@ hashExistingPasswords().then(() => {
   console.log('All passwords hashed');
   prisma.$disconnect();
 });
+
+/**
+ * Function to get the currently authenticated user
+ * GET /users/me
+ */
+export async function getCurrentUser(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      res.status(401).json({ message: 'Missing or invalid Authorization header' });
+      return;
+    }
+
+    const token = authHeader.split(' ')[1];
+    const decoded = jwt.decode(token) as { userId?: number; iat?: number; exp?: number } | null;
+    
+    const user = await prisma.user.findUnique({
+      where: { id: decoded?.userId },
+      select: {
+        id: true,
+        userName: true,
+        email: true,
+        points: true,
+        createdAt: true
+      }
+    });
+
+    if (!user) {
+      res.status(404).json({ message: 'User not found' });
+      return;
+    }
+
+    res.status(200).json(user);
+  } catch (err) {
+    next(err);
+  }
+}
