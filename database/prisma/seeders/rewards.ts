@@ -1,6 +1,4 @@
-import { PrismaClient, Reward } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma, Reward } from '@database/prisma';
 
 const rewards: Omit<Reward, 'id'>[] = [
   {

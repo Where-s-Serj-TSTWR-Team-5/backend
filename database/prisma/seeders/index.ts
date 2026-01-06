@@ -3,9 +3,7 @@ import { seedEvents } from './events.js';
 import { seedPlants } from './plants.js';
 import { seedRewards } from './rewards.js';
 import { seedUsers } from './users.js';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from '@database/prisma';
 
 const main = async () => {
   try {
