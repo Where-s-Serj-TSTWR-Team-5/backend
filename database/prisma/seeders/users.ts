@@ -35,7 +35,6 @@ export const seedUsers = async (): Promise<void> => {
   try {
     await prisma.user.createMany({
       data: users,
-      // skipDuplicates: true, // avoids unique constraint errors
     });
     console.log('✅ Users seeded');
   } catch (e) {
