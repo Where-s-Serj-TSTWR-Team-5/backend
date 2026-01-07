@@ -5,6 +5,7 @@ import IndexRouter from './routes/index.js';
 import { errorHandler } from './middleware/errors/errorHandler.js';
 import helmet from 'helmet';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 
 const app: Application = Express();
 const port: number = process.env.PORT ? parseInt(process.env.PORT) : 3010;
@@ -21,6 +22,9 @@ app.use(cors({
 // body parsing
 app.use(Express.json());
 app.use(Express.urlencoded({ extended: true }));
+
+// cookie parsing
+app.use(cookieParser());
 
 // All routing handled by IndexRouter
 app.use('/', IndexRouter);

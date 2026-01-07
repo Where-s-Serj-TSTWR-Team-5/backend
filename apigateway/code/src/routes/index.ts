@@ -2,7 +2,7 @@ import Express, { NextFunction, Request, Response, Router } from 'express';
 import { createProxyMiddleware, fixRequestBody } from 'http-proxy-middleware';
 import type { Filter, Options, RequestHandler } from 'http-proxy-middleware';
 import { ApiError } from '../middleware/errors/apiError.ts';
-// import { authenticateToken } from '../middleware/authentication/authenticate.ts';
+import { authenticateToken } from '../middleware/authentication/authenticate.ts';
 const router: Router = Express.Router();
 
 // Helper to send consistent error when a microservice is unavailable
@@ -85,7 +85,14 @@ router.get('/', (req: Request, res: Response, next: NextFunction) => {
 // router.use('/appointments', appointmentProxy);
 // If you want to add authentication to the microservice routes, add the authenticateToken middleware
 // router.use('/appointments', authenticateToken, appointmentProxyMiddleware);
-router.use('/plants', plantsProxyMiddleware);
+
+const protectPlantsWrites = (req: Request, res: Response, next: NextFunction) => {
+  if (req.method === "GET") return next();     // public read
+  return authenticateToken(req, res, next);    // protect everything else
+};
+
+
+router.use('/plants', protectPlantsWrites, plantsProxyMiddleware);
 router.use('/events', eventsProxyMiddleware);
 router.use('/rewards', rewardsProxyMiddleware);
 router.use('/users', usersProxyMiddleware);

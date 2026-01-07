@@ -3,12 +3,9 @@ import { getPlant, getPlants, setPlant, updatePlant, deletePlant } from '../cont
 
 const router: Router = Express.Router();
 
-// router.get('/', (req: Request, res: Response, next: NextFunction) => {
-//   res.json('hi');
-//   next();
-// });
 router.get('/', getPlants);
 router.get('/:id', getPlant);
+// Protected route, user needs to be authenticated
 router.post('/', setPlant);
 router.put('/:id', updatePlant);
 router.delete('/:id', deletePlant);
