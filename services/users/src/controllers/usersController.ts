@@ -3,7 +3,6 @@ import { NextFunction, Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { prisma, type User } from '@database/prisma';
-console.log("DATABASE_URL:", process.env.DATABASE_URL);
 
 /**
  * Interface for the response object
@@ -158,6 +157,7 @@ export async function getCurrentUser(req: Request, res: Response, next: NextFunc
         userName: true,
         email: true,
         points: true,
+        role: true,
         createdAt: true
       }
     });

@@ -4,3 +4,4 @@ export declare const ROLES: {
     readonly USER: "USER";
     readonly GREEN_OFFICE_MEMBER: "GREEN_OFFICE_MEMBER";
 };
+export type Role = (typeof ROLES)[keyof typeof ROLES];

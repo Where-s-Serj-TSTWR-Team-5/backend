@@ -3,7 +3,8 @@
   "workspaces": [
     "services/*",
     "apigateway/",
-    "database/"
+    "database/",
+    "middleware/"
   ],
   "devDependencies": {
     "concurrently": "^8.2.0",
@@ -19,5 +20,8 @@
     "build:all": "npm run build:database && npm run build:services",
     "migrate": "npm run prisma:migrate --workspace=@database/prisma",
     "seed": "npm run prisma:seed --workspace=@database/prisma"
+  },
+  "dependencies": {
+    "tsconfig-paths": "^4.2.0"
   }
 }
