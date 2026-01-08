@@ -158,7 +158,12 @@ export async function getCurrentUser(req: Request, res: Response, next: NextFunc
         email: true,
         points: true,
         role: true,
-        createdAt: true
+        createdAt: true,
+        eventRegistrations: {
+          select: {
+            eventId: true,
+          },
+        },
       }
     });
 
