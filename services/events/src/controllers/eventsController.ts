@@ -195,7 +195,7 @@ export async function deleteEvent(req: Request<{ id: string }>, res: Response, n
   }
 }
 
-export const toggleRegistration = async (req: AuthenticatedRequest, res: Response) => {
+export async function toggleRegistration(req: AuthenticatedRequest, res: Response){
   try {
     if (!req.user) {
       return res.status(401).json({ message: 'Unauthorized' });
