@@ -1,0 +1,58 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Event {
+  id                   Int      @id @default(autoincrement())
+  organizerId          Int
+  title                String
+  description          String
+  thumbnail            String
+  banner               String
+  location             String
+  startAt             DateTime
+  endAt               DateTime
+  date                DateTime
+  studyPoints         Int?
+  points              Int?
+  maxParticipants     Int?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+model Plant {
+  id                   Int      @id @default(autoincrement())
+  name                 String
+  scientificName       String?
+  description          String?
+  sunlightRequirement  Int?
+  waterNeeds           Int?
+  image                String?
+  plantTypeID          Int?
+  createdAt            DateTime @default(now())
+}
+
+model Reward {
+  id                  Int      @id @default(autoincrement())
+  title               String
+  description         String
+  thumbnail           String
+  requiredPoints      Int
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+model User {
+  id                  Int      @id @default(autoincrement())
+  userName            String   @unique
+  email               String   @unique
+  password            String
+  points              Int      @default(0)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
