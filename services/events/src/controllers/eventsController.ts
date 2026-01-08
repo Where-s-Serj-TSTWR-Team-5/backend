@@ -32,26 +32,46 @@ interface CreateEventRequestBody {
 }
 
 /**
- * Function to get all people
+ * Function to get all events, including registrations count
  * @param req {Request} - The Request object
  * @param res {Response} - The Response object
  * @returns {Promise<void>}
  */
 export async function getEvents(req: Request, res: Response): Promise<void> {
-  const events: Event[] = await prisma.event.findMany();
-  const clientReponse: ClientResponse = {
-    meta: {
-      count: events.length,
-      title: 'All events',
-      url: req.url
-    },
-    data: events
-  };
-  res.status(200).send(clientReponse);
+  try {
+    const events = await prisma.event.findMany({
+      include: {
+        registrations: {
+          select: {
+            userId: true,
+          },
+        },
+      },
+    });
+
+    const eventsWithParticipants = events.map(event => ({
+      ...event,
+      currentParticipants: event.registrations.length,
+    }));
+
+    const clientResponse = {
+      meta: {
+        count: events.length,
+        title: 'All events',
+        url: req.url,
+      },
+      data: eventsWithParticipants,
+    };
+
+    res.status(200).send(clientResponse);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: 'Failed to fetch events' });
+  }
 }
 
 /**
- * Function to get a person by id
+ * Function to get an event by id, including registrations
  * @param req {Request} - The Request object
  * @param res {Response} - The Response object
  * @returns {Promise<void>}
@@ -60,17 +80,34 @@ export async function getEvent(req: Request, res: Response, next: NextFunction):
   const id: number = parseInt(req.params.id);
 
   try {
-    const event: Event | null = await prisma.event.findUnique({
-      where: {
-        id: id
-      }
+    // Fetch the event and include registrations
+    const event = await prisma.event.findUnique({
+      where: { id },
+      include: {
+        registrations: {
+          select: {
+            userId: true,
+          },
+        },
+      },
     });
+
     if (!event) {
-      throw new Error('Event not found', { cause: 404 });
+      res.status(404).json({ success: false, message: "Event not found" });
+      return;
     }
-    res.json({ success: true, event });
+
+    const currentParticipants = event.registrations.length;
+
+    res.json({
+      success: true,
+      event: {
+        ...event,
+        currentParticipants,
+      },
+    });
   } catch (err) {
-    next(err); // forwards to error handler
+    next(err);
   }
 }
 
