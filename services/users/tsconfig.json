@@ -10,7 +10,13 @@
     "declaration": true,
     "sourceMap": true,
     "allowImportingTsExtensions": true,
-    "emitDeclarationOnly": true
+    "emitDeclarationOnly": true,
+
+    "baseUrl": ".",
+    "paths": {
+      "@shared/middleware": ["middleware/src"],
+      "@shared/middleware/*": ["middleware/src/*"]
+    }
   },
-  "include": ["src"]
+  "include": ["src", "middleware/src"]
 }
