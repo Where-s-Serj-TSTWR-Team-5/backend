@@ -47,12 +47,18 @@ model Reward {
   updatedAt           DateTime @updatedAt
 }
 
+enum Role {
+  USER
+  GREEN_OFFICE_MEMBER
+}
+
 model User {
-  id                  Int      @id @default(autoincrement())
-  userName            String   @unique
-  email               String   @unique
-  password            String
-  points              Int      @default(0)
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
+  id        Int      @id @default(autoincrement())
+  userName  String   @unique
+  email     String   @unique
+  password  String
+  points    Int      @default(0)
+  role      Role     @default(USER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
