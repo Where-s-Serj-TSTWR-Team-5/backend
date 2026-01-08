@@ -1,6 +1,7 @@
 import "dotenv/config";
 import { NextFunction, Request, Response } from 'express';
 import { prisma, type Event } from '@database/prisma';
+import { AuthenticatedRequest } from "@shared/middleware";
 
 /**
  * Interface for the response object
@@ -133,7 +134,7 @@ export async function createEvent(req: Request<unknown, unknown, CreateEventRequ
 /**
  * Function to delete an event by ID
  */
-export async function deleteEvent(  req: Request<{ id: string }>, res: Response, next: NextFunction): Promise<void> {
+export async function deleteEvent(req: Request<{ id: string }>, res: Response, next: NextFunction): Promise<void> {
   const id = parseInt(req.params.id);
 
   if (isNaN(id)) {
@@ -156,3 +157,80 @@ export async function deleteEvent(  req: Request<{ id: string }>, res: Response,
     next(err);
   }
 }
+
+export const toggleRegistration = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    const userId = req.user.id;
+    const { eventId } = req.body;
+
+    if (!eventId) {
+      return res.status(400).json({ message: 'eventId is required' });
+    }
+
+    // Check if already registered
+    const existingRegistration = await prisma.eventRegistration.findUnique({
+      where: {
+        userId_eventId: {
+          userId,
+          eventId,
+        },
+      },
+    });
+
+    // If registered → deregister
+    if (existingRegistration) {
+      await prisma.eventRegistration.delete({
+        where: {
+          userId_eventId: {
+            userId,
+            eventId,
+          },
+        },
+      });
+
+      return res.json({
+        registered: false,
+        message: 'Successfully deregistered from event',
+      });
+    }
+
+    // Enforce maxParticipants
+    const event = await prisma.event.findUnique({
+      where: { id: eventId },
+      include: {
+        registrations: true,
+      },
+    });
+
+    if (!event) {
+      return res.status(404).json({ message: 'Event not found' });
+    }
+
+    if (
+      event.maxParticipants &&
+      event.registrations.length >= event.maxParticipants
+    ) {
+      return res.status(400).json({ message: 'Event is full' });
+    }
+
+    // Register
+    await prisma.eventRegistration.create({
+      data: {
+        userId,
+        eventId,
+      },
+    });
+
+    return res.json({
+      registered: true,
+      message: 'Successfully registered for event',
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};
