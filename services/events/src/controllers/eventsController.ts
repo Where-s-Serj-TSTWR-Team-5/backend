@@ -125,7 +125,7 @@ export async function getEvent(
  * @param next {NextFunction} - The Next function
  * @returns {Promise<void>}
  */
-export async function createEvent(req: Request<unknown, unknown, CreateEventRequestBody>, res: Response, next: NextFunction): Promise<void> {
+export async function createEvent(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
   const {
     title,
     description,
@@ -144,6 +144,11 @@ export async function createEvent(req: Request<unknown, unknown, CreateEventRequ
     return;
   }
 
+  if (!req.user) {
+      res.status(401).json({ message: 'Not authenticated' });
+      return;
+    }
+
   try {
     // Calculate 1 hour default if not provided
     const defaultEndAt = new Date(new Date(startAt).getTime() + 60 * 60 * 1000);
@@ -161,7 +166,7 @@ export async function createEvent(req: Request<unknown, unknown, CreateEventRequ
         startAt: startAt,
         endAt: endAt || defaultEndAt,
         date: startAt,
-        organizerId: 1,
+        organizerId: req.user.id,
       }
     });
 
