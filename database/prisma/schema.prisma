@@ -23,6 +23,20 @@ model Event {
   maxParticipants     Int?
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
+
+  registrations EventRegistration[]
+}
+
+model EventRegistration {
+  userId  Int
+  eventId Int
+
+  user    User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  event   Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  registeredAt DateTime @default(now())
+
+  @@id([userId, eventId])
 }
 
 model Plant {
@@ -61,4 +75,6 @@ model User {
   role      Role     @default(USER)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  eventRegistrations EventRegistration[]
 }

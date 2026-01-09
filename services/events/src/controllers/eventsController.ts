@@ -1,6 +1,7 @@
 import "dotenv/config";
 import { NextFunction, Request, Response } from 'express';
 import { prisma, type Event } from '@database/prisma';
+import { AuthenticatedRequest } from "@shared/middleware";
 
 /**
  * Interface for the response object
@@ -31,26 +32,46 @@ interface CreateEventRequestBody {
 }
 
 /**
- * Function to get all people
+ * Function to get all events, including registrations count
  * @param req {Request} - The Request object
  * @param res {Response} - The Response object
  * @returns {Promise<void>}
  */
 export async function getEvents(req: Request, res: Response): Promise<void> {
-  const events: Event[] = await prisma.event.findMany();
-  const clientReponse: ClientResponse = {
-    meta: {
-      count: events.length,
-      title: 'All events',
-      url: req.url
-    },
-    data: events
-  };
-  res.status(200).send(clientReponse);
+  try {
+    const events = await prisma.event.findMany({
+      include: {
+        registrations: {
+          select: {
+            userId: true,
+          },
+        },
+      },
+    });
+
+    const eventsWithParticipants = events.map(event => ({
+      ...event,
+      currentParticipants: event.registrations.length,
+    }));
+
+    const clientResponse = {
+      meta: {
+        count: events.length,
+        title: 'All events',
+        url: req.url,
+      },
+      data: eventsWithParticipants,
+    };
+
+    res.status(200).send(clientResponse);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: 'Failed to fetch events' });
+  }
 }
 
 /**
- * Function to get a person by id
+ * Function to get an event by id, including registrations
  * @param req {Request} - The Request object
  * @param res {Response} - The Response object
  * @returns {Promise<void>}
@@ -59,17 +80,34 @@ export async function getEvent(req: Request, res: Response, next: NextFunction):
   const id: number = parseInt(req.params.id);
 
   try {
-    const event: Event | null = await prisma.event.findUnique({
-      where: {
-        id: id
-      }
+    // Fetch the event and include registrations
+    const event = await prisma.event.findUnique({
+      where: { id },
+      include: {
+        registrations: {
+          select: {
+            userId: true,
+          },
+        },
+      },
     });
+
     if (!event) {
-      throw new Error('Event not found', { cause: 404 });
+      res.status(404).json({ success: false, message: "Event not found" });
+      return;
     }
-    res.json({ success: true, event });
+
+    const currentParticipants = event.registrations.length;
+
+    res.json({
+      success: true,
+      event: {
+        ...event,
+        currentParticipants,
+      },
+    });
   } catch (err) {
-    next(err); // forwards to error handler
+    next(err);
   }
 }
 
@@ -133,7 +171,7 @@ export async function createEvent(req: Request<unknown, unknown, CreateEventRequ
 /**
  * Function to delete an event by ID
  */
-export async function deleteEvent(  req: Request<{ id: string }>, res: Response, next: NextFunction): Promise<void> {
+export async function deleteEvent(req: Request<{ id: string }>, res: Response, next: NextFunction): Promise<void> {
   const id = parseInt(req.params.id);
 
   if (isNaN(id)) {
@@ -156,3 +194,80 @@ export async function deleteEvent(  req: Request<{ id: string }>, res: Response,
     next(err);
   }
 }
+
+export async function toggleRegistration(req: AuthenticatedRequest, res: Response){
+  try {
+    if (!req.user) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    const userId = req.user.id;
+    const { eventId } = req.body;
+
+    if (!eventId) {
+      return res.status(400).json({ message: 'eventId is required' });
+    }
+
+    // Check if already registered
+    const existingRegistration = await prisma.eventRegistration.findUnique({
+      where: {
+        userId_eventId: {
+          userId,
+          eventId,
+        },
+      },
+    });
+
+    // If registered → deregister
+    if (existingRegistration) {
+      await prisma.eventRegistration.delete({
+        where: {
+          userId_eventId: {
+            userId,
+            eventId,
+          },
+        },
+      });
+
+      return res.json({
+        registered: false,
+        message: 'Successfully deregistered from event',
+      });
+    }
+
+    // Enforce maxParticipants
+    const event = await prisma.event.findUnique({
+      where: { id: eventId },
+      include: {
+        registrations: true,
+      },
+    });
+
+    if (!event) {
+      return res.status(404).json({ message: 'Event not found' });
+    }
+
+    if (
+      event.maxParticipants &&
+      event.registrations.length >= event.maxParticipants
+    ) {
+      return res.status(400).json({ message: 'Event is full' });
+    }
+
+    // Register
+    await prisma.eventRegistration.create({
+      data: {
+        userId,
+        eventId,
+      },
+    });
+
+    return res.json({
+      registered: true,
+      message: 'Successfully registered for event',
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};
