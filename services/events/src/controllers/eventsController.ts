@@ -76,24 +76,31 @@ export async function getEvents(req: Request, res: Response): Promise<void> {
  * @param res {Response} - The Response object
  * @returns {Promise<void>}
  */
-export async function getEvent(req: Request, res: Response, next: NextFunction): Promise<void> {
-  const id: number = parseInt(req.params.id);
+export async function getEvent(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  const id = Number(req.params.id);
 
   try {
-    // Fetch the event and include registrations
     const event = await prisma.event.findUnique({
       where: { id },
       include: {
+        organizer: true,
         registrations: {
-          select: {
-            userId: true,
+          include: {
+            user: true,
           },
         },
       },
     });
 
     if (!event) {
-      res.status(404).json({ success: false, message: "Event not found" });
+      res.status(404).json({
+        success: false,
+        message: "Event not found",
+      });
       return;
     }
 
