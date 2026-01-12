@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@database/prisma": ["database/src"]
+    },
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext"
+  }
+}
