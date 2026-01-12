@@ -198,3 +198,6 @@ GardenRobot/pipeline/notebooks/best_garden_cnn.pth
 GardenRobot/pipeline/data/
 GardenRobot/pipeline/__pycache__/
 .gitignore
+
+# Database files
+*.db
