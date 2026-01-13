@@ -42,7 +42,7 @@ export async function getUsers(req: Request, res: Response): Promise<void> {
  * @returns {Promise<void>}
  */
 export async function getUser(req: Request, res: Response, next: NextFunction): Promise<void> {
-  const id: number = parseInt(req.params.id);
+  const id: number = Number(req.params.id);
 
   try {
     const user: User | null = await prisma.user.findUnique({
@@ -149,7 +149,7 @@ export async function getCurrentUser(req: Request, res: Response, next: NextFunc
 
     const token = authHeader.split(' ')[1];
     const decoded = jwt.decode(token) as { userId?: number; iat?: number; exp?: number } | null;
-    
+
     const user = await prisma.user.findUnique({
       where: { id: decoded?.userId },
       select: {
@@ -176,4 +176,14 @@ export async function getCurrentUser(req: Request, res: Response, next: NextFunc
   } catch (err) {
     next(err);
   }
+}
+
+export async function logoutUser(req: Request, res: Response) {
+  res.clearCookie('token', {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production'
+  });
+
+  return res.json({ success: true, message: 'Logged out' });
 }
