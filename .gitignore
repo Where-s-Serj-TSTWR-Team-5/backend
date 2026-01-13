@@ -194,7 +194,9 @@ build/
 
 # Too big files
 GardenRobot/pipeline/cnns/
-GardenRobot/pipeline/notebooks/best_garden_cnn.pth
-GardenRobot/pipeline/data/
+GardenRobot/deprecated/pipeline/notebooks/best_garden_cnn.pth
+GardenRobot/deprecated/pipeline/data/
 GardenRobot/pipeline/__pycache__/
 .gitignore
+GardenRobot/jetson_scripts/dataset/train/
+GardenRobot/jetson_scripts/dataset/val/
