@@ -198,5 +198,9 @@ GardenRobot/deprecated/pipeline/notebooks/best_garden_cnn.pth
 GardenRobot/deprecated/pipeline/data/
 GardenRobot/pipeline/__pycache__/
 .gitignore
+
 GardenRobot/jetson_scripts/dataset/train/
 GardenRobot/jetson_scripts/dataset/val/
+
+# Database files
+*.db

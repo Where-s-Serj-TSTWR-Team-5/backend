@@ -1,0 +1,35 @@
+{
+  "name": "@database/prisma",
+  "version": "2024.1",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:migrate:deploy": "prisma migrate deploy",
+    "prisma:reset": "prisma migrate reset",
+    "prisma:seed": "prisma db seed"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seeders/index.ts"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.19.1",
+    "path": "^0.12.7"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "prisma": "^6.19.1",
+    "tsx": "^4.7.0",
+    "typescript": "5.9"
+  }
+}
