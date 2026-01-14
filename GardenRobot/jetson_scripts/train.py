@@ -10,4 +10,4 @@ model.train(data='/home/hzjarvis/pycharmgithub/GardenRobot/jetson_scripts/datase
             plots=True,
             cache=False,
             amp=False,
-            workers=0)
+            workers=1)
