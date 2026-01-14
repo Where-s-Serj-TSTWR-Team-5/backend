@@ -49,13 +49,12 @@ export async function getReward(req: Request, res: Response, next: NextFunction)
         id: id,
       },
     });
-    console.log("reward:", reward);
     if (!reward) {
-      throw new Error("Event not found", { cause: 404 });
+      throw new Error("Reward not found", { cause: 404 });
     }
     res.json({ success: true, reward });
   } catch (err) {
-    next(err); 
+    next(err);
   }
 }
 
