@@ -21,11 +21,11 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Build database
-        run: npm run build:database
-
       - name: Generate prismaClient
         run: npm run generate
+
+      - name: Build database
+        run: npm run build:database
 
       - name: Run all tests
         run: npm run test:all
