@@ -1,5 +1,5 @@
 export { prisma } from './prismaClient.js';
-export type { Event, User, Plant, Reward } from '@prisma/client';
+export type { Event, User, Plant, Reward, EventLabel } from '@prisma/client';
 
 export const ROLES = {
   USER: "USER",
@@ -13,4 +13,3 @@ export const EVENT_CATEGORIES = {
   WORKSHOP: 'WORKSHOP',
   CLEAN_UP: 'CLEAN_UP',
 } as const;
-export type EventCategory = (typeof EVENT_CATEGORIES)[keyof typeof EVENT_CATEGORIES];

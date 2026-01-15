@@ -35,16 +35,9 @@ model Event {
 
 model EventLabel {
   id        Int            @id @default(autoincrement())
-  category  EventCategory  @unique
+  category  String         @unique
 
   events    Event[]
-}
-
-enum EventCategory {
-  SUSTAINABILITY
-  GARDENING
-  WORKSHOP
-  CLEAN_UP
 }
 
 model EventRegistration {

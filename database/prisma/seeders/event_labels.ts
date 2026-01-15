@@ -1,18 +1,18 @@
-import { prisma, EVENT_CATEGORIES } from '@database/prisma'
+import { prisma, EventLabel } from '@database/prisma'
 
-const eventLabels = Object.values(EVENT_CATEGORIES).map((category) => ({
-  category,
-}))
+const eventLabels: Omit<EventLabel, 'id'>[] = [
+  { category: "🌱 sustainability" },
+  { category: "🌿 gardening" },
+  { category: "🔨 workshops" },
+  { category: "🧹 clean-up" },
+]
 
 export const seedEventLabels = async (): Promise<void> => {
   try {
-    for (const label of eventLabels) {
-      await prisma.eventLabel.upsert({
-        where: { category: label.category },
-        update: {},
-        create: label,
-      })
-    }
+    await prisma.eventLabel.createMany({
+      data: eventLabels,
+    })
+
     console.log('✅ Event labels seeded')
   } catch (e) {
     console.error('❌ Error seeding event labels:', e)
