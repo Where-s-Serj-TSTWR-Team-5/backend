@@ -13,6 +13,7 @@ const events: Omit<Event, 'id'>[] = [
     date: new Date('2024-03-20'),
     studyPoints: 2,
     points: 2,
+    labelId: 1,
     maxParticipants: 100,
     createdAt: new Date(),
     updatedAt: new Date()
@@ -29,6 +30,7 @@ const events: Omit<Event, 'id'>[] = [
     date: new Date('2024-06-15'),
     studyPoints: 3,
     points: 2,
+    labelId: 2,
     maxParticipants: 150,
     createdAt: new Date(),
     updatedAt: new Date()
@@ -45,6 +47,7 @@ const events: Omit<Event, 'id'>[] = [
     date: new Date('2024-09-10'),
     studyPoints: 2,
     points: 2,
+    labelId: 3,
     maxParticipants: 80,
     createdAt: new Date(),
     updatedAt: new Date()
