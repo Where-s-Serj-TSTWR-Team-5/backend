@@ -29,6 +29,7 @@ interface CreateEventRequestBody {
   studyPoints?: number;
   points?: number;
   maxParticipants?: number;
+  labelId?: number;
 }
 
 /**
@@ -41,6 +42,7 @@ export async function getEvents(req: Request, res: Response): Promise<void> {
   try {
     const events = await prisma.event.findMany({
       include: {
+        label: true,
         registrations: {
           select: {
             userId: true,
@@ -87,6 +89,7 @@ export async function getEvent(
     const event = await prisma.event.findUnique({
       where: { id },
       include: {
+        label: true,
         organizer: true,
         registrations: {
           include: {
@@ -125,7 +128,11 @@ export async function getEvent(
  * @param next {NextFunction} - The Next function
  * @returns {Promise<void>}
  */
-export async function createEvent(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
+export async function createEvent(
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
   const {
     title,
     description,
@@ -137,46 +144,66 @@ export async function createEvent(req: AuthenticatedRequest, res: Response, next
     studyPoints,
     points,
     maxParticipants,
-  } = req.body;
+    labelId,
+  } = req.body
 
   if (!startAt) {
-    res.status(400).json({ success: false, message: 'startAt time is required.' });
-    return;
+    res.status(400).json({ success: false, message: 'startAt time is required.' })
+    return
   }
 
   if (!req.user) {
-      res.status(401).json({ message: 'Not authenticated' });
-      return;
-    }
+    res.status(401).json({ message: 'Not authenticated' })
+    return
+  }
 
   try {
-    // Calculate 1 hour default if not provided
-    const defaultEndAt = new Date(new Date(startAt).getTime() + 60 * 60 * 1000);
+    const defaultEndAt = new Date(
+      new Date(startAt).getTime() + 60 * 60 * 1000
+    )
+
+    let resolvedLabelId: number | undefined
+
+    if (labelId !== undefined) {
+      const label = await prisma.eventLabel.findUnique({
+        where: { id: Number(labelId) },
+      })
+
+      if (!label) {
+        res.status(400).json({ message: 'Invalid labelId' })
+        return
+      }
+
+      resolvedLabelId = label.id
+    }
 
     const newEvent = await prisma.event.create({
       data: {
-        title: title,
-        location: location,
+        title,
+        location,
         description: description || 'No description provided.',
         thumbnail: thumbnail || '',
         banner: banner || '',
         studyPoints: studyPoints || 0,
         maxParticipants: maxParticipants || 100,
-        points: points,
-        startAt: startAt,
+        points,
+        startAt,
         endAt: endAt || defaultEndAt,
         date: startAt,
         organizerId: req.user.id,
-      }
-    });
+
+        ...(resolvedLabelId !== undefined && {
+          labelId: resolvedLabelId,
+        }),
+      },
+    })
 
     res.status(201).json({
       success: true,
-      event: newEvent
-    });
-
+      event: newEvent,
+    })
   } catch (err) {
-    next(err);
+    next(err)
   }
 }
 
@@ -187,15 +214,15 @@ export async function createEvent(req: AuthenticatedRequest, res: Response, next
  * @param next {NextFunction} - The Next function
  */
 export async function updateEvent(
-  req: Request<{ id: string }, unknown, Partial<CreateEventRequestBody>>, 
-  res: Response, 
+  req: Request<{ id: string }, unknown, Partial<CreateEventRequestBody>>,
+  res: Response,
   next: NextFunction
 ): Promise<void> {
-  const id = parseInt(req.params.id);
+  const id = parseInt(req.params.id)
 
   if (isNaN(id)) {
-    res.status(400).json({ success: false, message: 'Invalid Event ID' });
-    return;
+    res.status(400).json({ success: false, message: 'Invalid Event ID' })
+    return
   }
 
   const {
@@ -209,14 +236,34 @@ export async function updateEvent(
     studyPoints,
     points,
     maxParticipants,
-  } = req.body;
+    labelId,
+  } = req.body
 
   try {
-    const existingEvent = await prisma.event.findUnique({ where: { id } });
-    
+    const existingEvent = await prisma.event.findUnique({ where: { id } })
+
     if (!existingEvent) {
-      res.status(404).json({ success: false, message: 'Event not found' });
-      return;
+      res.status(404).json({ success: false, message: 'Event not found' })
+      return
+    }
+
+    let resolvedLabelId: number | null | undefined
+
+    if (labelId !== undefined) {
+      if (labelId === null) {
+        resolvedLabelId = null
+      } else {
+        const label = await prisma.eventLabel.findUnique({
+          where: { id: Number(labelId) },
+        })
+
+        if (!label) {
+          res.status(400).json({ message: 'Invalid labelId' })
+          return
+        }
+
+        resolvedLabelId = label.id
+      }
     }
 
     const updatedEvent = await prisma.event.update({
@@ -229,20 +276,27 @@ export async function updateEvent(
         location: location ?? undefined,
         startAt: startAt ?? undefined,
         endAt: endAt ?? undefined,
-        studyPoints: studyPoints !== undefined ? Number(studyPoints) : undefined,
+        studyPoints:
+          studyPoints !== undefined ? Number(studyPoints) : undefined,
         points: points !== undefined ? Number(points) : undefined,
-        maxParticipants: maxParticipants !== undefined ? Number(maxParticipants) : undefined,
+        maxParticipants:
+          maxParticipants !== undefined
+            ? Number(maxParticipants)
+            : undefined,
         date: startAt ?? undefined,
+
+        ...(resolvedLabelId !== undefined && {
+          labelId: resolvedLabelId,
+        }),
       },
-    });
+    })
 
     res.status(200).json({
       success: true,
-      event: updatedEvent
-    });
-
+      event: updatedEvent,
+    })
   } catch (err) {
-    next(err);
+    next(err)
   }
 }
 
