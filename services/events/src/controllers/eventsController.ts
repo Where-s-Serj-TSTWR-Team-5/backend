@@ -327,7 +327,7 @@ export async function deleteEvent(req: Request<{ id: string }>, res: Response, n
   }
 }
 
-export async function toggleRegistration(req: AuthenticatedRequest, res: Response){
+export async function toggleRegistration(req: AuthenticatedRequest, res: Response) {
   try {
     if (!req.user) {
       return res.status(401).json({ message: 'Unauthorized' });
@@ -403,3 +403,30 @@ export async function toggleRegistration(req: AuthenticatedRequest, res: Respons
     return res.status(500).json({ message: 'Internal server error' });
   }
 };
+
+/**
+ * Function to get all event labels
+ * @param req {Request} - The Request object
+ * @param res {Response} - The Response object
+ * @param next {NextFunction} - The Next function
+ * @returns {Promise<void>}
+ */
+export async function getLabels(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const labels = await prisma.eventLabel.findMany({
+      orderBy: { id: "asc" },
+    });
+    res.status(200).json({
+      success: true,
+      data: labels,
+      url: req.url,
+    });
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
+}
