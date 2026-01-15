@@ -20,7 +20,8 @@
     "build:services": "npm run build --workspace=@service/events && npm run build --workspace=@service/plants && npm run build --workspace=@service/rewards && npm run build --workspace=@service/users",
     "build:all": "npm run build:database && npm run build:services",
     "migrate": "npm run prisma:migrate --workspace=@database/prisma",
-    "seed": "npm run prisma:seed --workspace=@database/prisma"
+    "seed": "npm run prisma:seed --workspace=@database/prisma",
+    "test:all": "concurrently \"npm run test --workspace=@service/events\" \"npm run test --workspace=@service/plants\" \"npm run test --workspace=@service/rewards\" \"npm run test --workspace=@service/users\""
   },
   "dependencies": {
     "cookie-parser": "^1.4.7",
