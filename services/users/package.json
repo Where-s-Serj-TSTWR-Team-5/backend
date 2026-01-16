@@ -10,7 +10,8 @@
     "build": "tsc",
     "postinstall": "",
     "dev": "nodemon --watch src --ext ts --exec tsx src/start.ts",
-    "start": "tsx src/start.ts"
+    "start": "tsx src/start.ts",
+    "test": "tsx src/tests/index.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.14.0",
