@@ -20,6 +20,10 @@ model Event {
   startAt          DateTime
   endAt            DateTime
   date             DateTime
+
+  labelId          Int?
+  label            EventLabel? @relation(fields: [labelId], references: [id])
+
   studyPoints      Int?
   points           Int?
   maxParticipants  Int?
@@ -27,6 +31,13 @@ model Event {
   updatedAt        DateTime @updatedAt
 
   registrations    EventRegistration[]
+}
+
+model EventLabel {
+  id        Int            @id @default(autoincrement())
+  category  String         @unique
+
+  events    Event[]
 }
 
 model EventRegistration {

@@ -1,4 +1,5 @@
 import "dotenv/config";
+import { seedEventLabels } from "./event_labels.js";
 import { seedEvents } from './events.js';
 import { seedPlants } from './plants.js';
 import { seedRewards } from './rewards.js';
@@ -8,6 +9,7 @@ import { prisma } from '@database/prisma';
 const main = async () => {
   try {
     await seedUsers();
+    await seedEventLabels();
     await seedEvents();
     await seedPlants();
     await seedRewards();
