@@ -1,5 +1,5 @@
 export { prisma } from './prismaClient.js';
-export type { Event, User, Plant, Reward, EventLabel } from '@prisma/client';
+export type { Prisma } from '@prisma/client';
 
 export const ROLES = {
   USER: "USER",

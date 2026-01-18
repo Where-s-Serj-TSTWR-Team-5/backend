@@ -14,10 +14,14 @@
   "scripts": {
     "build": "tsc",
     "prisma:generate": "prisma generate",
-    "prisma:migrate": "prisma migrate dev",
+    "prisma:migrate": "prisma migrate deploy",
     "prisma:migrate:deploy": "prisma migrate deploy",
     "prisma:reset": "prisma migrate reset",
-    "prisma:seed": "prisma db seed"
+    "prisma:seed": "prisma db seed",
+    "postinstall": "prisma generate",
+    "generate": "prisma generate",
+    "migrate:deploy": "prisma migrate deploy",
+    "migrate": "prisma migrate deploy"
   },
   "prisma": {
     "seed": "tsx prisma/seeders/index.ts"
@@ -29,7 +33,7 @@
   "devDependencies": {
     "@types/node": "^20.11.0",
     "prisma": "^6.19.1",
-    "tsx": "^4.7.0",
+    "tsx": "^4.21.0",
     "typescript": "5.9"
   }
 }
