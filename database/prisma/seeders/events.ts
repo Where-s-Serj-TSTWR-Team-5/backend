@@ -61,9 +61,9 @@ export const seedEvents = async (): Promise<void> => {
       data: events,
       // skipDuplicates: true, // avoids unique constraint errors
     });
-    console.log('Events seeded');
+    console.log('✅ Events seeded');
   } catch (e) {
-    console.error('Error seeding events:', e);
+    console.error('❌ Error seeding events:', e);
     throw e;
   }
 };

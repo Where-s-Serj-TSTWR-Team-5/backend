@@ -8,60 +8,115 @@ datasource db {
 }
 
 model Event {
-  id               Int      @id @default(autoincrement())
-  organizerId      Int
-  organizer        User     @relation(fields: [organizerId], references: [id], onDelete: Cascade)
+  id          Int  @id @default(autoincrement())
+  organizerId Int
+  organizer   User @relation(fields: [organizerId], references: [id], onDelete: Cascade)
 
-  title            String
-  description      String
-  thumbnail        String
-  banner           String
-  location         String
-  startAt          DateTime
-  endAt            DateTime
-  date             DateTime
+  title       String
+  description String
+  thumbnail   String
+  banner      String
+  location    String
+  startAt     DateTime
+  endAt       DateTime
+  date        DateTime
 
-  labelId          Int?
-  label            EventLabel? @relation(fields: [labelId], references: [id])
+  labelId Int?
+  label   EventLabel? @relation(fields: [labelId], references: [id])
 
-  studyPoints      Int?
-  points           Int?
-  maxParticipants  Int?
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  studyPoints     Int?
+  points          Int?
+  maxParticipants Int?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
-  registrations    EventRegistration[]
+  registrations EventRegistration[]
 }
 
 model EventLabel {
-  id        Int            @id @default(autoincrement())
-  category  String         @unique
+  id       Int    @id @default(autoincrement())
+  category String @unique
 
-  events    Event[]
+  events Event[]
 }
 
 model EventRegistration {
   userId  Int
   eventId Int
 
-  user    User  @relation(fields: [userId], references: [id], onDelete: Cascade)
-  event   Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
 
   registeredAt DateTime @default(now())
 
   @@id([userId, eventId])
 }
 
+model PlantType {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+
+  plants Plant[]
+}
+
 model Plant {
-  id                   Int      @id @default(autoincrement())
-  name                 String
-  scientificName       String?
-  description          String?
-  sunlightRequirement  Int?
-  waterNeeds           Int?
-  image                String?
-  plantTypeID          Int?
-  createdAt            DateTime @default(now())
+  id             Int     @id @default(autoincrement())
+  name           String
+  scientificName String?
+  description    String?
+
+  image String?
+
+  // ERD: PlantTypeID is FK to PlantTypes
+  plantTypeID Int?
+  plantType   PlantType? @relation(fields: [plantTypeID], references: [id], onDelete: Restrict)
+
+  createdAt DateTime @default(now())
+
+  plantedPlants PlantedPlant[]
+  ownerHistory  PlantOwnerHistory[]
+}
+
+model PlantedPlant {
+  id Int @id @default(autoincrement())
+
+  // ERD: PlantID FK
+  plantId Int
+  plant   Plant @relation(fields: [plantId], references: [id], onDelete: Cascade)
+
+  // ERD: OwnerID FK
+  ownerId Int
+  owner   User @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  mapX Float? // 0..100
+  mapY Float? // 0..100
+
+  plantedAt   DateTime  @default(now())
+  harvestedAt DateTime?
+
+  sunlightLevel Int?
+  waterLevel    Int?
+
+  // prevents the same user from having the same plant twice (optional)
+  // remove if you want duplicates allowed
+  @@unique([ownerId, plantId])
+}
+
+model PlantOwnerHistory {
+  id Int @id @default(autoincrement())
+
+  plantId Int
+  ownerId Int
+
+  notes     String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  plant Plant @relation(fields: [plantId], references: [id], onDelete: Cascade)
+  owner User  @relation("OwnerHistory", fields: [ownerId], references: [id])
+
+  @@index([plantId])
+  @@index([ownerId])
 }
 
 enum Role {
@@ -70,39 +125,44 @@ enum Role {
 }
 
 model User {
-  id                 Int                 @id @default(autoincrement())
-  userName           String              @unique
-  email              String              @unique
-  password           String
-  points             Int                 @default(0)
-  role               Role                @default(USER)
-  createdAt          DateTime            @default(now())
-  updatedAt          DateTime            @updatedAt
+  id        Int      @id @default(autoincrement())
+  userName  String   @unique
+  email     String   @unique
+  password  String
+  points    Int      @default(0)
+  role      Role     @default(USER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   eventRegistrations EventRegistration[]
-  organizedEvents    Event[]   @relation()
-  pendingRewards     PendingReward[]
+  organizedEvents    Event[]             @relation()
+
+  plantedPlants PlantedPlant[]
+
+  ownerHistory PlantOwnerHistory[] @relation("OwnerHistory")
+
+  pendingRewards PendingReward[]
 }
 
 model Reward {
-  id             Int             @id @default(autoincrement())
+  id             Int      @id @default(autoincrement())
   title          String
   description    String
   thumbnail      String
   requiredPoints Int
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   pendingRewards PendingReward[]
 }
 
 model PendingReward {
-  id        Int      @id @default(autoincrement())
-  rewardId  Int
-  userId    Int
+  id       Int @id @default(autoincrement())
+  rewardId Int
+  userId   Int
 
-  reward    Reward   @relation(fields: [rewardId], references: [id], onDelete: Cascade)
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reward Reward @relation(fields: [rewardId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   purchasedAt DateTime @default(now())
 }

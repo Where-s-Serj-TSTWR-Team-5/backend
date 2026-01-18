@@ -1,14 +1,41 @@
 import { Request, Response, NextFunction } from 'express';
+import jwt from 'jsonwebtoken';
 
-// Simple Bearer token authentication middleware
 export const authenticateToken = (req: Request, res: Response, next: NextFunction): void => {
-  const authHeader: string | undefined = req.headers['authorization'];
-  const token: string | undefined = authHeader && authHeader.split(' ')[1]; // Extract the token from the header
-  const expectedToken: string | undefined = 'your-secret-token'; // Replace with your actual token
+  const authHeader = req.headers.authorization;
 
-  if (token === expectedToken) {
-    next();
-  } else {
+  if (!authHeader) {
     res.status(401).json({ message: 'Unauthorized' });
+    return;
+  }
+
+  // Accept: "Bearer <token>"
+  const token = authHeader.startsWith('Bearer ')
+    ? authHeader.slice('Bearer '.length).trim()
+    : authHeader.trim();
+
+  if (!token) {
+    res.status(401).json({ message: 'Unauthorized' });
+    return;
+  }
+
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    console.error('API Gateway JWT_SECRET missing');
+    res.status(500).json({ message: 'Server misconfigured' });
+    return;
+  }
+
+  try {
+    const decoded = jwt.verify(token, secret);
+
+    // Optional: attach decoded payload for later use
+    (req as any).user = decoded;
+
+    next();
+  } catch (err) {
+    console.error('JWT verify failed in API Gateway:', err);
+    res.status(401).json({ message: 'Unauthorized' });
+    return;
   }
 };

@@ -1,13 +1,14 @@
 import Express, { Application, Request, Response, NextFunction } from 'express';
 import * as Dotenv from 'dotenv';
 Dotenv.config({ path: './.env' , override: true});
-import IndexRouter from './routes/index.ts';
+import plantsRouter from './routes/plant.js';
+import plantedPlantsRouter from './routes/plant.js';
 import { errorHandler } from './middleware/errors/errorHandler.ts';
 import helmet from 'helmet';
 import cors from 'cors';
 
 const app: Application = Express();
-const port: number = process.env.PORT ? parseInt(process.env.PORT) : 3010;
+const port: number = process.env.PORT ? parseInt(process.env.PORT) : 3020;
 
 // security middleware
 app.use(helmet());
@@ -22,7 +23,8 @@ app.use(cors({
 app.use(Express.json());
 app.use(Express.urlencoded({ extended: true }));
 
-app.use('/', IndexRouter);
+app.use('/', plantsRouter);
+app.use('/planted-plants', plantedPlantsRouter);
 
 // 404
 app.use((req: Request, res: Response, next: NextFunction) => {
@@ -32,6 +34,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
     next(err);
   }
 });
+
 
 // error handler
 app.use(errorHandler);

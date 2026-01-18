@@ -28,15 +28,15 @@ function handleProxyError(serviceName: string, err: Error, req: Request, res: Re
 }
 
 // Plants microservice proxy
-const plantsProxyMiddleware = createProxyMiddleware<Request, Response>({
+const plantsProxyMiddleware = createProxyMiddleware({
   target: 'http://localhost:3020',
+  changeOrigin: true,
   on: {
     proxyReq: fixRequestBody,
     error: (err, req, res) => {
       handleProxyError('plants', err, req as Request, res as Response);
-    },
-  },
-  changeOrigin: true
+    }
+  }
 });
 
 // Users microservice proxy
