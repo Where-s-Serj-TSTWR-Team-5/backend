@@ -21,7 +21,8 @@
     "build:all": "npm run build:database && npm run build:services",
     "migrate": "npm run prisma:migrate --workspace=@database/prisma",
     "seed": "npm run prisma:seed --workspace=@database/prisma",
-    "test:all": "concurrently \"npm run test --workspace=@service/events\" \"npm run test --workspace=@service/plants\" \"npm run test --workspace=@service/rewards\" \"npm run test --workspace=@service/users\""
+    "test:all": "concurrently \"npm run test --workspace=@service/events\" \"npm run test --workspace=@service/plants\" \"npm run test --workspace=@service/rewards\" \"npm run test --workspace=@service/users\"",
+    "migrate:deploy": "npm run migrate:deploy --workspace=@database/prisma"
   },
   "dependencies": {
     "cookie-parser": "^1.4.7",
