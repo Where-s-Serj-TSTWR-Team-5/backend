@@ -8,33 +8,33 @@ datasource db {
 }
 
 model Event {
-  id               Int      @id @default(autoincrement())
-  organizerId      Int
-  organizer        User     @relation(fields: [organizerId], references: [id], onDelete: Cascade)
+  id          Int  @id @default(autoincrement())
+  organizerId Int
+  organizer   User @relation(fields: [organizerId], references: [id], onDelete: Cascade)
 
-  title            String
-  description      String
-  thumbnail        String
-  banner           String
-  location         String
-  startAt          DateTime
-  endAt            DateTime
-  date             DateTime
-  studyPoints      Int?
-  points           Int?
-  maxParticipants  Int?
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  title           String
+  description     String
+  thumbnail       String
+  banner          String
+  location        String
+  startAt         DateTime
+  endAt           DateTime
+  date            DateTime
+  studyPoints     Int?
+  points          Int?
+  maxParticipants Int?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
-  registrations    EventRegistration[]
+  registrations EventRegistration[]
 }
 
 model EventRegistration {
   userId  Int
   eventId Int
 
-  user    User  @relation(fields: [userId], references: [id], onDelete: Cascade)
-  event   Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
 
   registeredAt DateTime @default(now())
 
@@ -42,63 +42,80 @@ model EventRegistration {
 }
 
 model PlantType {
-  id    Int    @id @default(autoincrement())
-  name  String @unique
+  id   Int    @id @default(autoincrement())
+  name String @unique
 
   plants Plant[]
 }
 
 model Plant {
-  id                   Int      @id @default(autoincrement())
-  name                 String
-  scientificName       String?
-  description          String?
-  sunlightRequirement  Int?
-  waterNeeds           Int?
-  image                String?
+  id             Int     @id @default(autoincrement())
+  name           String
+  scientificName String?
+  description    String?
+
+  image String?
 
   // ERD: PlantTypeID is FK to PlantTypes
-  plantTypeID          Int?
-  plantType            PlantType? @relation(fields: [plantTypeID], references: [id], onDelete: Restrict)
+  plantTypeID Int?
+  plantType   PlantType? @relation(fields: [plantTypeID], references: [id], onDelete: Restrict)
 
-  createdAt            DateTime @default(now())
+  createdAt DateTime @default(now())
 
-  plantedPlants        PlantedPlant[]
+  plantedPlants PlantedPlant[]
+  ownerHistory  PlantOwnerHistory[]
 }
 
 model PlantedPlant {
-  id            Int      @id @default(autoincrement())
+  id Int @id @default(autoincrement())
 
   // ERD: PlantID FK
-  plantId       Int
-  plant         Plant    @relation(fields: [plantId], references: [id], onDelete: Cascade)
+  plantId Int
+  plant   Plant @relation(fields: [plantId], references: [id], onDelete: Cascade)
 
   // ERD: OwnerID FK
-  ownerId       Int
-  owner         User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId Int
+  owner   User @relation(fields: [ownerId], references: [id], onDelete: Cascade)
 
-  mapX          Float? // 0..100
-  mapY          Float? // 0..100
+  mapX Float? // 0..100
+  mapY Float? // 0..100
 
-  plantedAt     DateTime @default(now())
-  harvestedAt   DateTime?
+  plantedAt   DateTime  @default(now())
+  harvestedAt DateTime?
 
-  sunlightLevel Int?     // or default(0) if you want
-  waterLevel    Int?     // or default(0) if you want
+  sunlightLevel Int?
+  waterLevel    Int?
 
   // prevents the same user from having the same plant twice (optional)
   // remove if you want duplicates allowed
   @@unique([ownerId, plantId])
 }
 
+model PlantOwnerHistory {
+  id Int @id @default(autoincrement())
+
+  plantId Int
+  ownerId Int
+
+  notes     String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  plant Plant @relation(fields: [plantId], references: [id], onDelete: Cascade)
+  owner User  @relation("OwnerHistory", fields: [ownerId], references: [id])
+
+  @@index([plantId])
+  @@index([ownerId])
+}
+
 model Reward {
-  id                  Int      @id @default(autoincrement())
-  title               String
-  description         String
-  thumbnail           String
-  requiredPoints      Int
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
+  id             Int      @id @default(autoincrement())
+  title          String
+  description    String
+  thumbnail      String
+  requiredPoints Int
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 }
 
 enum Role {
@@ -117,7 +134,9 @@ model User {
   updatedAt DateTime @updatedAt
 
   eventRegistrations EventRegistration[]
-  organizedEvents    Event[]   @relation()
+  organizedEvents    Event[]             @relation()
 
-  plantedPlants      PlantedPlant[]
+  plantedPlants PlantedPlant[]
+
+  ownerHistory PlantOwnerHistory[] @relation("OwnerHistory")
 }

@@ -11,8 +11,6 @@ const plants: PlantSeed[] = [
     name: 'Tomato',
     scientificName: 'Solanum lycopersicum',
     description: 'Fast-growing annual that produces edible red fruits.',
-    sunlightRequirement: 2,
-    waterNeeds: 2,
     image: 'https://bonnieplants.com/cdn/shop/articles/BONNIE_tomatoes_iStock-481349128-1800px_43c63bb9-9102-4e7f-823b-94a0b295ff0f.jpg?v=1766498650',
     plantTypeName: 'Bush', // change when you want
     createdAt: new Date()
@@ -21,8 +19,6 @@ const plants: PlantSeed[] = [
     name: 'Strawberry',
     scientificName: 'Fragaria × ananassa',
     description: 'Perennial groundcover that produces sweet berries.',
-    sunlightRequirement: 2,
-    waterNeeds: 2,
     image: 'https://cdn.mos.cms.futurecdn.net/8JSxroK8emP69sD5Xp24Pk-1252-80.jpg',
     plantTypeName: 'Bush', // change when you want
     createdAt: new Date()
@@ -31,8 +27,6 @@ const plants: PlantSeed[] = [
     name: 'Lavender',
     scientificName: 'Lavandula angustifolia',
     description: 'Drought-tolerant herb that attracts pollinators.',
-    sunlightRequirement: 2,
-    waterNeeds: 1,
     image: 'https://www.gardendesign.com/pictures/images/675x529Max/site_3/english-lavender-lavandula-angustifolia-garden-design_11716.jpg',
     plantTypeName: 'Flower',
     createdAt: new Date()
@@ -63,8 +57,6 @@ export const seedPlants = async (): Promise<void> => {
         name: p.name,
         scientificName: p.scientificName,
         description: p.description,
-        sunlightRequirement: p.sunlightRequirement,
-        waterNeeds: p.waterNeeds,
         image: p.image,
         plantTypeID: typeId,
         createdAt: p.createdAt

@@ -1,6 +1,7 @@
 import "dotenv/config";
 import { seedUsers } from './users.js';
 import { seedPlantTypes } from './plantTypes.js'; // before plants
+import { seedPlantOwnerHistory } from './plantOwnerHistory.js';
 import { seedPlants } from './plants.js';
 import { seedPlantedPlants } from './plantedPlants.js'; // after users & plants
 import { seedEvents } from './events.js'; // after users
@@ -12,6 +13,7 @@ const main = async () => {
     await seedUsers();
     await seedPlantTypes();
     await seedPlants();
+    await seedPlantOwnerHistory();
     await seedPlantedPlants();
     await seedEvents();
     await seedRewards();
