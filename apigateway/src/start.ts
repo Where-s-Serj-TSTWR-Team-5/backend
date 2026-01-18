@@ -1,7 +1,16 @@
 // start.js setup from learnnode.com by Wes Bos
 import Express, { Application, Request, Response, NextFunction } from 'express';
 import * as Dotenv from 'dotenv';
-Dotenv.config({ path: '.env', override: true });
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// loads: backend/apigateway/.env  (adjust if your structure differs)
+Dotenv.config({ path: path.join(__dirname, '../.env'), override: true });
+
+console.log('GATEWAY JWT_SECRET loaded:', Boolean(process.env.JWT_SECRET));
 import IndexRouter from './routes/index.ts';
 import { errorHandler } from './middleware/errors/errorHandler.ts';
 
