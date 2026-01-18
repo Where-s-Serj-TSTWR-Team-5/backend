@@ -7,6 +7,7 @@ import { seedPlantedPlants } from './plantedPlants.js'; // after users & plants
 import { seedEvents } from './events.js'; // after users
 import { seedRewards } from './rewards.js';
 import { prisma } from '@database/prisma';
+import { seedEventLabels } from "./event_labels.js";
 
 const main = async () => {
   try {
@@ -15,6 +16,7 @@ const main = async () => {
     await seedPlants();
     await seedPlantOwnerHistory();
     await seedPlantedPlants();
+    await seedEventLabels();
     await seedEvents();
     await seedRewards();
 
