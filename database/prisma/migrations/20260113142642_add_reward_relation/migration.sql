@@ -1,0 +1,9 @@
+-- CreateTable
+CREATE TABLE "PendingReward" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "rewardId" INTEGER NOT NULL,
+    "userId" INTEGER NOT NULL,
+    "purchasedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT "PendingReward_rewardId_fkey" FOREIGN KEY ("rewardId") REFERENCES "Reward" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT "PendingReward_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+);

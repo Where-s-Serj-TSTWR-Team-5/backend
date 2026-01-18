@@ -5,3 +5,9 @@ export declare const ROLES: {
     readonly GREEN_OFFICE_MEMBER: "GREEN_OFFICE_MEMBER";
 };
 export type Role = (typeof ROLES)[keyof typeof ROLES];
+export declare const EVENT_CATEGORIES: {
+    readonly SUSTAINABILITY: "SUSTAINABILITY";
+    readonly GARDENING: "GARDENING";
+    readonly WORKSHOP: "WORKSHOP";
+    readonly CLEAN_UP: "CLEAN_UP";
+};
