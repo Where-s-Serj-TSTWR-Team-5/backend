@@ -32,14 +32,15 @@ jobs:
         run: npm install
 
       - name: Run ESLint
-        working-directory: ${{ matrix.service }}
-        run: |
-          npm install eslint eslint-config-standard eslint-plugin-import eslint-plugin-node eslint-plugin-promise eslint-plugin-svelte3 --save-dev
-          if [ -f .eslintrc.* ]; then
-            npx eslint . --max-warnings=0
-          else
-            echo "No ESLint config found, skipping lint"
-          fi
+  working-directory: ${{ matrix.service }}
+  run: |
+    npm install eslint eslint-config-standard eslint-plugin-import eslint-plugin-node eslint-plugin-promise eslint-plugin-svelte3 --save-dev --legacy-peer-deps
+    if [ -f .eslintrc.* ]; then
+      npx eslint . --max-warnings=0
+    else
+      echo "No ESLint config found, skipping lint"
+    fi
+
 
       - name: Run Tests with Coverage
         working-directory: ${{ matrix.service }}
