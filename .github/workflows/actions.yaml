@@ -33,7 +33,7 @@ jobs:
       - name: Run ESLint
         working-directory: ${{ matrix.service }}
         run: |
-          npm install eslint eslint-config-standard eslint-plugin-import eslint-plugin-node eslint-plugin-promise eslint-plugin-svelte3 --save-dev --legacy-peer-deps
+          npm install eslint@^8.44.0 eslint-config-standard eslint-plugin-import eslint-plugin-node eslint-plugin-promise eslint-plugin-svelte3 --save-dev --legacy-peer-deps
           if ls .eslintrc.* 1> /dev/null 2>&1; then
             npx eslint . --max-warnings=0
           else
