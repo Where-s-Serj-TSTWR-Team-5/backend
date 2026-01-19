@@ -3,11 +3,20 @@ name: CI Build
 on:
   push:
     branches:
-      - "**"
+      - '**'
 
 jobs:
-  build-and-test:
+  build:
     runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        service:
+          - apigateway
+          - database
+          - services/plants
+          - services/rewards
+          - services/users
 
     steps:
       - name: Checkout repository
@@ -16,19 +25,36 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: '20'
 
       - name: Install dependencies
+        working-directory: ${{ matrix.service }}
         run: npm install
 
-      - name: Generate prismaClient
-        run: npm run generate
+      - name: Run ESLint
+        working-directory: ${{ matrix.service }}
+        run: |
+          npm install eslint eslint-config-standard eslint-plugin-import eslint-plugin-node eslint-plugin-promise eslint-plugin-svelte3 --save-dev
+          if [ -f .eslintrc.* ]; then
+            npx eslint . --max-warnings=0
+          else
+            echo "No ESLint config found, skipping lint"
+          fi
 
-      - name: Build database
-        run: npm run build:database
-
-      - name: Run all tests
-        run: npm run test:all
+      - name: Run Tests with Coverage
+        working-directory: ${{ matrix.service }}
+        run: |
+          if [ -f package.json ]; then
+            if grep -q "\"vitest\"" package.json; then
+              npm install vitest @testing-library/svelte --save-dev
+              npx vitest run --coverage
+            else
+              npm install jest --save-dev
+              npx jest --coverage
+            fi
+          else
+            echo "No package.json found, skipping tests"
+          fi
 
       - name: Notify Teams
         if: always()
@@ -42,6 +68,6 @@ jobs:
                     \"summary\": \"Build Notification\",
                     \"themeColor\": \"0076D7\",
                     \"title\": \"CI Build Result\",
-                    \"text\": \"Status: **${STATUS}**\"
+                    \"text\": \"Service: **${{ matrix.service }}**<br>Status: **${STATUS}**\"
                   }" \
                ${{ secrets.TEAMS_WEBHOOK_URL }}
