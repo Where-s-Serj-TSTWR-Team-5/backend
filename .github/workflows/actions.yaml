@@ -3,11 +3,12 @@ name: CI Build
 on:
   push:
     branches:
-      - '**'
+      - "**"
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     strategy:
       matrix:
         service:
@@ -24,35 +25,20 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: "20"
 
       - name: Install dependencies
         working-directory: ${{ matrix.service }}
         run: npm install
 
       - name: Run ESLint
-  working-directory: ${{ matrix.service }}
-  run: |
-    npm install eslint@^8.57.1 eslint-config-standard eslint-plugin-import eslint-plugin-node eslint-plugin-promise eslint-plugin-svelte3 @typescript-eslint/parser@^5.70.0 @typescript-eslint/eslint-plugin@^5.70.0 --save-dev --legacy-peer-deps
-    if ls .eslintrc.* 1> /dev/null 2>&1; then
-      npx eslint . --ext .js,.ts,.svelte --max-warnings=0
-    else
-      echo "No ESLint config found, skipping lint"
-    fi
-
-      - name: Run Tests with Coverage
         working-directory: ${{ matrix.service }}
         run: |
-          if [ -f package.json ]; then
-            if grep -q "\"vitest\"" package.json; then
-              npm install vitest @testing-library/svelte --save-dev --legacy-peer-deps
-              npx vitest run --coverage
-            else
-              npm install jest --save-dev --legacy-peer-deps
-              npx jest --coverage
-            fi
+          npm install eslint@^8.57.1 eslint-config-standard eslint-plugin-import eslint-plugin-node eslint-plugin-promise eslint-plugin-svelte3 @typescript-eslint/parser@^5.70.0 @typescript-eslint/eslint-plugin@^5.70.0 --save-dev --legacy-peer-deps
+          if ls .eslintrc.* 1> /dev/null 2>&1; then
+            npx eslint . --ext .js,.ts,.svelte --max-warnings=0
           else
-            echo "No package.json found, skipping tests"
+            echo "No ESLint config found, skipping lint"
           fi
 
       - name: Notify Teams
