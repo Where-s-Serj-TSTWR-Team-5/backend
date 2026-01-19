@@ -8,7 +8,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     strategy:
       matrix:
         service:
@@ -32,25 +31,24 @@ jobs:
         run: npm install
 
       - name: Run ESLint
-  working-directory: ${{ matrix.service }}
-  run: |
-    npm install eslint eslint-config-standard eslint-plugin-import eslint-plugin-node eslint-plugin-promise eslint-plugin-svelte3 --save-dev --legacy-peer-deps
-    if [ -f .eslintrc.* ]; then
-      npx eslint . --max-warnings=0
-    else
-      echo "No ESLint config found, skipping lint"
-    fi
-
+        working-directory: ${{ matrix.service }}
+        run: |
+          npm install eslint eslint-config-standard eslint-plugin-import eslint-plugin-node eslint-plugin-promise eslint-plugin-svelte3 --save-dev --legacy-peer-deps
+          if ls .eslintrc.* 1> /dev/null 2>&1; then
+            npx eslint . --max-warnings=0
+          else
+            echo "No ESLint config found, skipping lint"
+          fi
 
       - name: Run Tests with Coverage
         working-directory: ${{ matrix.service }}
         run: |
           if [ -f package.json ]; then
             if grep -q "\"vitest\"" package.json; then
-              npm install vitest @testing-library/svelte --save-dev
+              npm install vitest @testing-library/svelte --save-dev --legacy-peer-deps
               npx vitest run --coverage
             else
-              npm install jest --save-dev
+              npm install jest --save-dev --legacy-peer-deps
               npx jest --coverage
             fi
           else
