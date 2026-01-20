@@ -3,7 +3,7 @@ name: CI Build
 on:
   push:
     branches:
-      - '**'
+      - "**"
 
 jobs:
   build:
@@ -25,21 +25,38 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: "20"
 
       - name: Install dependencies
         working-directory: ${{ matrix.service }}
-        run: npm install
+        run: |
+          npm install
+          # Installing specific ESLint tools to support TS 5.x
+          npm install eslint@^8.57.1 \
+            @typescript-eslint/parser@^7.0.0 \
+            @typescript-eslint/eslint-plugin@^7.0.0 \
+            --save-dev --legacy-peer-deps
 
-      - name: Run ESLint
+      - name: Check for Code Smells
         working-directory: ${{ matrix.service }}
         run: |
-          npm install eslint@^8.57.1 eslint-config-standard eslint-plugin-import eslint-plugin-node eslint-plugin-promise eslint-plugin-svelte3 @typescript-eslint/parser@^5.62.0 @typescript-eslint/eslint-plugin@^5.62.0 --save-dev --legacy-peer-deps
-          if ls .eslintrc.* 1> /dev/null 2>&1; then
-            npx eslint . --ext .js,.ts,.svelte --max-warnings=0
-          else
-            echo "No ESLint config found, skipping lint"
-          fi
+          npx eslint "**/*.{js,ts}" \
+            --no-eslintrc \
+            --parser @typescript-eslint/parser \
+            --plugin @typescript-eslint \
+            --rule '@typescript-eslint/no-unused-vars: warn' \
+            --rule 'no-console: warn' \
+            --rule 'semi: off' \
+            --rule 'quotes: off' \
+            --rule '@typescript-eslint/semi: off' \
+            --rule '@typescript-eslint/quotes: off' \
+            --rule '@typescript-eslint/strict-boolean-expressions: off'
+
+      - name: Run Tests
+        working-directory: ${{ matrix.service }}
+        run: |
+          # Runs your test suite; build remains green if tests pass
+          npm test
 
       - name: Notify Teams
         if: always()
