@@ -5,7 +5,7 @@ from ultralytics import YOLO
 
 
 def run_garden_scan():
-    model_path = 'yolov8n.pt'
+    model_path = 'best.pt'
     print(f"--- Starting GardenRobot Scan ---\nLoading model: {model_path}...")
     model = YOLO(model_path)
 
