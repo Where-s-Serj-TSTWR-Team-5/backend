@@ -6,7 +6,7 @@ from ultralytics import YOLO
 base_dir = os.path.dirname(__file__)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-model = YOLO('yolov8n.pt')
+model = YOLO('best.pt')
 
 image_folder = '/home/hzjarvis/pycharmgithub/GardenRobot/jetson_scripts/cam_images'
 processed_images = set()
