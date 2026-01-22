@@ -1,5 +1,5 @@
-train: /home/hzjarvis/pycharmgithub/GardenRobot/jetson_scripts/dataset/train/images
-val: /home/hzjarvis/pycharmgithub/GardenRobot/jetson_scripts/dataset/val/images
+train: train/images
+val: val/images
 
 nc: 2
 names: ['Person', 'EchteSalie']

@@ -3,9 +3,8 @@ import time
 import sys
 from ultralytics import YOLO
 
-
 def run_garden_scan():
-    model_path = 'best.pt'
+    model_path = '.pt' # Change to the .pt model file you wish to use
     print(f"--- Starting GardenRobot Scan ---\nLoading model: {model_path}...")
     model = YOLO(model_path)
 

@@ -1,13 +1,12 @@
 from ultralytics import YOLO
 
-model = YOLO('yolov8n.pt')
+model = YOLO('yolo26n.pt')
 
-model.train(data='/home/hzjarvis/pycharmgithub/GardenRobot/jetson_scripts/dataset/data.yaml',
-            epochs = 1,
-            imgsz =320,
+model.train(data='dataset/data.yaml',
+            epochs=1,
             device=0,
-            batch=1,
+            batch=64,
+            nbs=64,
+            amp=True,
             plots=True,
-            cache=False,
-            amp=False,
-            workers=1)
+            workers=0)
