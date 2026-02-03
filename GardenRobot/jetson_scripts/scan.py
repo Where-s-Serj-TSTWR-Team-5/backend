@@ -1,20 +1,23 @@
+import os
+os.environ['PYTORCH_ALLOC_CONF'] = 'expandable_segments:True'
 import cv2
 import time
 import sys
 from ultralytics import YOLO
 
 def run_garden_scan():
-    model_path = '.pt' # Change to the .pt model file you wish to use
+    model_path = 'yolo26_best.engine'
     print(f"--- Starting GardenRobot Scan ---\nLoading model: {model_path}...")
-    model = YOLO(model_path)
+    model = YOLO(model_path, task='detect')
 
     gst_str = (
         "nvarguscamerasrc sensor-id=0 ! "
-        "video/x-raw(memory:NVMM), width=(int)1920, height=(int)1080, format=(string)NV12, framerate=(fraction)30/1 ! "
-        "nvvidconv flip-method=0 ! "
-        "video/x-raw, width=(int)1920, height=(int)1080, format=(string)BGRx ! "
+        "video/x-raw(memory:NVMM), width=1920, height=1080, format=NV12, framerate=30/1 ! "
+        "nvvidconv ! "
+        "video/x-raw, width=640, height=640, format=BGRx ! "
         "videoconvert ! "
-        "video/x-raw, format=(string)BGR ! appsink drop=True"
+        "video/x-raw, format=BGR ! "
+        "appsink drop=True"
     )
 
     cap = None
@@ -45,11 +48,14 @@ def run_garden_scan():
                 print("Error: Empty frame received.")
                 break
 
-            results = model(frame, stream=True, conf=0.25, verbose=False)
+            img_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            results = model(img_rgb, stream=True, conf=0.4, verbose=False)
 
             annotated_frame = frame.copy()
             for r in results:
                 annotated_frame = r.plot()
+                if len(r.boxes) > 0:
+                	print(f"Detected: {r.boxes.cls.tolist()} with conf {r.boxes.conf.tolist()}")
 
             curr_time = time.time()
             fps = 1 / (curr_time - prev_time) if (curr_time - prev_time) > 0 else 0
